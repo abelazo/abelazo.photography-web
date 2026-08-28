@@ -1,0 +1,87 @@
+---
+default_install_hook_types:
+  - commit-msg
+  - pre-commit
+  - pre-merge-commit
+  - prepare-commit-msg
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      # Run the linter
+      - id: ruff-check
+        args: [--fix]  # Automatically fix lint errors
+      # Run the formatter
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+
+  # - repo: https://github.com/commitizen-tools/commitizen
+  #   rev: v4.16.5
+  #   hooks:
+  #     - id: commitizen
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: [-d, "{rules: {line-length: {max: 160}}}"]
+        exclude: ^pnpm-lock\.yaml$
+
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.37.4
+    hooks:
+      - id: check-github-actions
+      - id: check-github-workflows
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.28.0
+    hooks:
+      - id: zizmor
+        args:
+          - --no-progress
+          - --fix
+          - --min-severity=high
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.108.1
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+
+  - repo: local
+    hooks:
+      - id: commitizen-check
+        name: commitizen check (commit message schema)
+        description: Enforce the cz_customize schema on the commit message.
+        entry: uvx --from commitizen==4.18.0 cz check
+        args: [--allow-abort, --commit-msg-file]
+        language: system
+        stages: [commit-msg]
+        pass_filenames: true
+      - id: eslint
+        name: ESLint
+        entry: npx eslint --fix
+        language: system
+        files: \.[jt]sx?$
+      - id: prettier
+        name: Prettier
+        entry: npx prettier --write
+        language: system
+        files: \.[jt]sx?$
+      - id: tsc-check
+        name: TypeScript Check
+        entry: npx tsc --noEmit
+        language: system
+        #types: [typescript]
+        pass_filenames: false

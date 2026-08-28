@@ -1,0 +1,77 @@
+[tool.commitizen]
+name = "cz_customize"
+version_provider = "npm"
+tag_format = "v$version"
+update_changelog_on_bump = true
+major_version_zero = true
+
+[tool.commitizen.customize]
+# <type>(<scope>): <subject> (#<issue>)
+# feat(authorizer): add DNI normalization (#12)
+schema = "<type>(<scope>): <subject> (#<issue>)"
+example = "feat(authorizer): add DNI normalization (#12)"
+schema_pattern = '(?s)(build|bump|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(\S+\))?!?: ([^\n\r]+ \(#\d+\))((\n\n.*)|(\s*))?$'
+
+message_template = "{{change_type}}{% if scope %}({{scope}}){% endif %}{% if breaking %}!{% endif %}: {{subject}} (#{{issue | replace('#', '') }}){% if body %}\n\n{{body}}{% endif %}"
+
+info = """
+Commit schema:  <type>(<scope>): <subject> (#<issue>)
+Example:        feat(authorizer): add DNI normalization (#12)
+
+  type      build | bump | chore | ci | docs | feat | fix | perf | refactor | revert | style | test
+  scope     optional, e.g. (authorizer)
+  !         optional, placed before the colon to mark a breaking change
+  subject   imperative mood; MUST end with the issue/PR ref "  (#<number>)"
+  body      optional; separated from the subject line by one blank line
+"""
+
+# `cz bump` support
+bump_pattern = '^(build|bump|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(\S+\))?(!)?'
+bump_map = { '^.+!$' = "MAJOR", '^feat' = "MINOR", '^fix' = "PATCH", '^perf' = "PATCH", '^refactor' = "PATCH" }
+bump_map_major_version_zero = { '^.+!$' = "MINOR", '^feat' = "MINOR", '^fix' = "PATCH", '^perf' = "PATCH", '^refactor' = "PATCH" }
+change_type_order = ["feat", "fix", "perf", "refactor", "docs", "build", "ci", "test", "style", "chore", "revert", "bump"]
+
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "change_type"
+message = "Type of change:"
+choices = [
+  { value = "feat", name = "feat:     a new feature" },
+  { value = "fix", name = "fix:      a bug fix" },
+  { value = "perf", name = "perf:     a performance improvement" },
+  { value = "refactor", name = "refactor: neither fixes a bug nor adds a feature" },
+  { value = "docs", name = "docs:     documentation only" },
+  { value = "style", name = "style:    formatting / white-space; no code change" },
+  { value = "test", name = "test:     add or correct tests" },
+  { value = "build", name = "build:    build system or dependencies" },
+  { value = "ci", name = "ci:       CI configuration" },
+  { value = "chore", name = "chore:    other; no src or test change" },
+  { value = "revert", name = "revert:   revert a previous commit" },
+  { value = "bump", name = "bump:     version bump" },
+]
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "scope"
+message = "Scope (optional, e.g. authorizer) — enter to skip:"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "subject"
+message = "Subject (imperative, no trailing period, no issue ref):"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "issue"
+message = "Issue / PR number (digits only, required):"
+
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "breaking"
+message = "Breaking change?"
+default = false
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "body"
+message = "Body (optional, longer description) — enter to skip:"
