@@ -1,5 +1,8 @@
 ---
+import { Image } from 'astro:assets';
+import { getGalleries, gallerySlug } from '../lib/galleries';
 
+const galleries = await getGalleries();
 ---
 
 <html lang="en">
@@ -9,9 +12,24 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
+    <title>Abelazo Photography</title>
   </head>
   <body>
     <h1>Abelazo Photography</h1>
+    <ul>
+      {
+        galleries.map((gallery) => (
+          <li>
+            <Image src={gallery.data.cover} alt="" width={240} height={160} />
+            <h2>{gallery.data.title}</h2>
+            <p>{gallery.data.description}</p>
+            <p>
+              <code>{gallerySlug(gallery)}</code> — {gallery.data.photos.length} photos
+              {gallery.data.featured ? ' — featured' : ''}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
   </body>
 </html>

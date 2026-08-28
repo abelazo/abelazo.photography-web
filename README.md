@@ -60,6 +60,9 @@ rejects anything that fails `.cz.toml` → `schema_pattern`.
 /
 ├── public/          static assets served as-is
 ├── src/
+│   ├── assets/galleries/<slug>/   gallery source images (optimised at build)
+│   ├── content/galleries/         one markdown file per gallery
+│   ├── content.config.ts          gallery collection + Zod schema
 │   ├── lib/         framework-agnostic helpers (unit tested)
 │   └── pages/       file-based routes
 ├── astro.config.mjs
@@ -71,9 +74,38 @@ rejects anything that fails `.cz.toml` → `schema_pattern`.
 └── tsconfig.json        extends astro/tsconfigs/strict
 ```
 
+## Content
+
+Galleries are an [Astro content collection](https://docs.astro.build/en/guides/content-collections/)
+loaded from `src/content/galleries/`. Each gallery is one markdown file; its
+frontmatter is validated against the Zod schema in `src/content.config.ts`, so a
+missing or mis-typed field fails `pnpm build` with a pointed error.
+
+```
+src/content/galleries/coastal-mornings.md   # frontmatter + optional prose body
+src/assets/galleries/coastal-mornings/      # the image files it references
+```
+
+| Field         | Type              | Notes                                                                      |
+| :------------ | :---------------- | :------------------------------------------------------------------------- |
+| `title`       | string            | Shown in headings and nav.                                                 |
+| `slug`        | string (optional) | URL slug; defaults to the file name.                                       |
+| `description` | string            | One or two sentences; reused for meta descriptions.                        |
+| `date`        | `YYYY-MM-DD`      | Capture date.                                                              |
+| `cover`       | image path        | Relative to the markdown file.                                             |
+| `featured`    | boolean           | Defaults to `false`. Surfaces the gallery on the home page.                |
+| `order`       | integer           | Manual sort key, ascending. Defaults to `0`.                               |
+| `photos`      | list              | `{ src, alt }` per photo; array order is display order. `alt` is required. |
+
+Query galleries through the helpers in `src/lib/galleries.ts`
+(`getGalleries`, `getFeaturedGalleries`, `gallerySlug`) so sorting stays
+consistent. `coastal-mornings` and `harbour-lights` are sample galleries — a
+working reference to copy and then replace.
+
 ## Tooling
 
-- **Package manager** — pnpm, pinned via `packageManager`. `esbuild` is allowlisted to run its build script in `pnpm-workspace.yaml`.
+- **Package manager** — pnpm, pinned via `packageManager`. `esbuild` and `sharp` are allowlisted to run their build scripts in `pnpm-workspace.yaml`.
+- **Images** — `sharp` powers `astro:assets` optimisation of gallery photos at build time.
 - **TypeScript** — strict mode via `astro/tsconfigs/strict`.
 - **ESLint** — flat config: `typescript-eslint` + `eslint-plugin-astro`, with `eslint-config-prettier` disabling stylistic rules.
 - **Prettier** — `prettier-plugin-astro` for `.astro` formatting.
