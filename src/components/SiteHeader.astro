@@ -1,0 +1,30 @@
+---
+/** Site-wide masthead. Kept deliberately spare — a wordmark and nothing else. */
+const nav: { label: string; href: string }[] = [{ label: 'Galleries', href: '/' }];
+const path = Astro.url.pathname;
+---
+
+<header class="border-b border-line bg-surface">
+  <div
+    class="mx-auto flex max-w-[var(--width-content)] items-baseline justify-between gap-6 px-6 py-5 md:px-10"
+  >
+    <a href="/" class="font-serif text-lg tracking-tight hover:text-muted">Abelazo</a>
+    <nav aria-label="Primary">
+      <ul class="flex gap-6 text-sm">
+        {
+          nav.map(({ label, href }) => (
+            <li>
+              <a
+                href={href}
+                aria-current={path === href ? 'page' : undefined}
+                class="text-muted transition-colors hover:text-ink aria-[current=page]:text-ink"
+              >
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

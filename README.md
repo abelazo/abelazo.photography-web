@@ -64,6 +64,9 @@ rejects anything that fails `.cz.toml` → `schema_pattern`.
 │   ├── content/galleries/         one markdown file per gallery
 │   ├── content.config.ts          gallery collection + Zod schema
 │   ├── lib/         framework-agnostic helpers (unit tested)
+│   ├── layouts/     shared page shells (BaseLayout: head/meta, header, footer)
+│   ├── components/  reusable .astro components (SiteHeader, SiteFooter)
+│   ├── styles/      global.css — Tailwind entry + design tokens (@theme)
 │   └── pages/       file-based routes
 ├── astro.config.mjs
 ├── eslint.config.js
@@ -106,9 +109,26 @@ Folder layout, slug and file-naming rules, image requirements (format,
 resolution, cover selection, alt text), and a start-to-finish **Adding a new
 gallery** checklist live in [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md).
 
+## Styling
+
+Every page renders through `src/layouts/BaseLayout.astro`, which owns the
+`<head>` (title, meta, Open Graph, canonical), the site header, and the footer.
+Pages pass `title` and optional `description` and fill the default slot.
+
+Styling is [Tailwind CSS](https://tailwindcss.com/) v4 (the `@tailwindcss/vite`
+plugin — no `tailwind.config.js`). Design tokens are defined once in
+`src/styles/global.css` under `@theme`: a near-monochrome palette
+(`canvas` `surface` `ink` `muted` `line`), two native font stacks (`font-serif`
+for display headings, `font-sans` for everything else), and `--width-content`
+for the page column. Dark mode overrides those variables under
+`prefers-color-scheme: dark`, so no `dark:` variants are needed in components.
+Use the token utilities (`bg-surface`, `text-muted`, `border-line`, …) rather
+than hardcoding colours or font families.
+
 ## Tooling
 
 - **Package manager** — pnpm, pinned via `packageManager`. `esbuild` and `sharp` are allowlisted to run their build scripts in `pnpm-workspace.yaml`.
+- **Styling** — Tailwind CSS v4 via `@tailwindcss/vite`; tokens in `src/styles/global.css` (`@theme`).
 - **Images** — `sharp` powers `astro:assets` optimisation of gallery photos at build time.
 - **TypeScript** — strict mode via `astro/tsconfigs/strict`.
 - **ESLint** — flat config: `typescript-eslint` + `eslint-plugin-astro`, with `eslint-config-prettier` disabling stylistic rules.

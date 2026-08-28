@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — the single source of truth for colour, type, and spacing.
+ * Everything here is exposed as a Tailwind utility (`bg-canvas`, `text-muted`,
+ * `font-serif`, …). Never hardcode a hex value or a font stack in a component;
+ * add or adjust a token here instead.
+ */
+@theme {
+  /* Palette — a restrained near-monochrome so the photographs carry the colour. */
+  --color-canvas: #fafaf9; /* page background */
+  --color-surface: #ffffff; /* raised surfaces: cards, header */
+  --color-ink: #1c1917; /* primary text */
+  --color-muted: #78716c; /* secondary text, captions, metadata */
+  --color-line: #e7e5e4; /* hairline borders and dividers */
+
+  /* Typefaces — two only, both native stacks so there is no web-font request.
+     `serif` for display headings, `sans` for everything else. */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif:
+    ui-serif, 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+
+  /* Layout — max line/column width for prose and page chrome. */
+  --width-content: 72rem;
+}
+
+/*
+ * Dark mode: override the colour tokens at the `:root` level. Tailwind colour
+ * utilities compile to `var(--color-*)`, so redefining the variables here is
+ * enough — no `dark:` variants needed in components. (`@theme` blocks can't be
+ * nested in a media query; a plain `:root` override is the supported way.)
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #1c1917;
+    --color-surface: #262322;
+    --color-ink: #f5f5f4;
+    --color-muted: #a8a29e;
+    --color-line: #3a3633;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+  }
+}

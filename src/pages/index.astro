@@ -1,35 +1,40 @@
 ---
 import { Image } from 'astro:assets';
-import { getGalleries, gallerySlug } from '../lib/galleries';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getGalleries } from '../lib/galleries';
 
 const galleries = await getGalleries();
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Abelazo Photography</title>
-  </head>
-  <body>
-    <h1>Abelazo Photography</h1>
-    <ul>
-      {
-        galleries.map((gallery) => (
-          <li>
-            <Image src={gallery.data.cover} alt="" width={240} height={160} />
-            <h2>{gallery.data.title}</h2>
-            <p>{gallery.data.description}</p>
-            <p>
-              <code>{gallerySlug(gallery)}</code> — {gallery.data.photos.length} photos
-              {gallery.data.featured ? ' — featured' : ''}
+<BaseLayout title="Abelazo Photography">
+  <section class="max-w-2xl">
+    <h1 class="text-4xl md:text-5xl">Abelazo Photography</h1>
+    <p class="mt-4 text-lg text-muted">Landscape and coastal work by Abel Guillen.</p>
+  </section>
+
+  <ul class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      galleries.map((gallery) => (
+        <li>
+          <article>
+            <div class="overflow-hidden bg-line">
+              <Image
+                src={gallery.data.cover}
+                alt=""
+                width={480}
+                height={320}
+                class="aspect-3/2 w-full object-cover"
+              />
+            </div>
+            <h2 class="mt-4 text-xl">{gallery.data.title}</h2>
+            <p class="mt-1 text-sm text-muted">{gallery.data.description}</p>
+            <p class="mt-2 text-xs text-muted">
+              {gallery.data.photos.length} photos
+              {gallery.data.featured ? ' · featured' : ''}
             </p>
-          </li>
-        ))
-      }
-    </ul>
-  </body>
-</html>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
