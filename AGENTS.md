@@ -28,6 +28,16 @@ Build-script permissions for dependencies live in `pnpm-workspace.yaml` (`allowB
 
 Run `pnpm lint`, `pnpm format:check`, and `pnpm test` before proposing changes.
 
+## Workflow
+
+- **Trunk-based development.** Work directly on `main` — do not create branches
+  or open pull requests.
+- **Always run the pre-commit hooks** before handing work back:
+  `prek run --all-files` (or `pre-commit run --all-files`). Fix anything they
+  flag.
+- **Do not commit.** Leave the changes in the working tree; the owner reviews and
+  commits manually after verification.
+
 ## Commit messages
 
 Enforced by Commitizen (`cz_customize`, config in `.cz.toml`) via a `commit-msg`
