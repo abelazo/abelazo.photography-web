@@ -102,6 +102,10 @@ Query galleries through the helpers in `src/lib/galleries.ts`
 consistent. `coastal-mornings` and `harbour-lights` are sample galleries — a
 working reference to copy and then replace.
 
+Folder layout, slug and file-naming rules, image requirements (format,
+resolution, cover selection, alt text), and a start-to-finish **Adding a new
+gallery** checklist live in [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md).
+
 ## Tooling
 
 - **Package manager** — pnpm, pinned via `packageManager`. `esbuild` and `sharp` are allowlisted to run their build scripts in `pnpm-workspace.yaml`.
