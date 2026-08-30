@@ -38,6 +38,9 @@ Run `pnpm lint`, `pnpm format:check`, and `pnpm test` before proposing changes.
   each of its acceptance criteria from the visitor's point of view. One spec per
   story (e.g. `e2e/<feature>.spec.ts`), criteria mapped to `test()` cases. The
   story is not done until `pnpm test:e2e` covers it and passes.
+  _Exception:_ infrastructure stories (CI/CD, tooling) with no visitor-facing
+  behaviour are verified by the pipeline running green and a live deploy, not by
+  a Playwright spec.
 - **Always run the pre-commit hooks** before handing work back:
   `prek run --all-files` (or `pre-commit run --all-files`). Fix anything they
   flag.
@@ -83,8 +86,32 @@ to wire the git hooks.
 - `pnpm test:e2e:ui` for the interactive runner, `pnpm test:e2e:report` for the
   last HTML report. Reports/artifacts land in `playwright-report/` and
   `test-results/` (git-ignored).
-- No CI job yet — wiring E2E into the deploy pipeline is a separate task.
+- CI runs `pnpm test:e2e` in the `verify` job of `.github/workflows/deploy.yml`
+  (see **Deploy pipeline**).
 - New user stories require coverage here — see **Workflow**.
+
+## Deploy pipeline
+
+`.github/workflows/deploy.yml` runs on every push to `main`:
+
+1. **`verify`** — `pnpm lint`, `format:check`, `test`, `build`, then Playwright
+   E2E. Any failure blocks the rest and GitHub emails the owner.
+2. **`release`** — [semantic-release](https://github.com/semantic-release/semantic-release)
+   (`.releaserc.json`). Reads the Conventional-Commit types since the last tag:
+   `feat` → minor, `fix`/`perf` → patch, `!`/`BREAKING CHANGE` → major;
+   `chore`/`docs`/`ci`/`style`/`test`/`refactor` → no release. On a release it
+   tags `vX.Y.Z`, writes `CHANGELOG.md`, bumps `package.json`, commits both back
+   to `main` as `chore(release): … [skip ci]`, and publishes a GitHub Release.
+3. **`deploy`** — only when `release` cut a version. Rebuilds at the new tag and
+   runs `netlify deploy --prod` (prebuilt `dist/`, no Netlify-side build).
+
+Releases are semantic-release only — `cz` / `.cz.toml` stays commit-message
+linting; `cz bump` is unused.
+
+The Netlify site is **not linked to the Git repo** (no Netlify auto-build) —
+GitHub Actions is the only path to production. Requires repo secrets
+`NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`, and repo Actions permissions set to
+"Read and write" so semantic-release can push.
 
 ## Documentation
 

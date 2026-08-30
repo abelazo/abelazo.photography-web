@@ -138,9 +138,21 @@ than hardcoding colours or font families.
 - **ESLint** — flat config: `typescript-eslint` + `eslint-plugin-astro`, with `eslint-config-prettier` disabling stylistic rules.
 - **Prettier** — `prettier-plugin-astro` for `.astro` formatting.
 - **Vitest** — configured through `astro/config`'s `getViteConfig`; tests live next to source as `*.test.ts`.
-- **Playwright** — E2E tests in `e2e/*.spec.ts`, config in `playwright.config.ts`. Chromium only. `pnpm test:e2e` starts the Astro dev server itself (or reuses one on `:4321`). Install the browser once with `pnpm exec playwright install chromium`. No CI job yet.
-- **Commitizen** — `cz_customize` ruleset (`.cz.toml`); the `commit-msg` hook in `.pre-commit-config.yaml` runs `cz check` via `uvx`. Wire hooks with `prek install`.
+- **Playwright** — E2E tests in `e2e/*.spec.ts`, config in `playwright.config.ts`. Chromium only. `pnpm test:e2e` starts the Astro dev server itself (or reuses one on `:4321`). Install the browser once with `pnpm exec playwright install chromium`. Runs in CI in the `verify` job.
+- **Commitizen** — `cz_customize` ruleset (`.cz.toml`); the `commit-msg` hook in `.pre-commit-config.yaml` runs `cz check` via `uvx`. Wire hooks with `prek install`. Commit-message linting only — releases are cut by semantic-release.
+- **semantic-release** — `.releaserc.json`; the `release` job derives the next version from Conventional-Commit types, tags `vX.Y.Z`, writes `CHANGELOG.md`, and publishes a GitHub Release.
 
 ## Deployment
 
-Netlify builds with `pnpm build` and publishes `dist/`. It detects pnpm from `pnpm-lock.yaml`; Node version is pinned by `.nvmrc`.
+Every push to `main` runs `.github/workflows/deploy.yml`:
+
+1. **verify** — `lint`, `format:check`, `test`, `build`, Playwright E2E.
+2. **release** — [semantic-release](https://github.com/semantic-release/semantic-release)
+   cuts a version + tag + `CHANGELOG.md` + GitHub Release from the
+   Conventional-Commit history (skipped when no commit bumps a version).
+3. **deploy** — only after a release: rebuilds at the new tag and runs
+   `netlify deploy --prod` on the prebuilt `dist/`.
+
+The Netlify site is not connected to the repo (no Netlify-side build). CI is the
+only route to production and needs the repo secrets `NETLIFY_AUTH_TOKEN` and
+`NETLIFY_SITE_ID`, plus Actions permissions set to "Read and write".
