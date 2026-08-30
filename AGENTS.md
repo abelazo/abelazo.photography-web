@@ -33,6 +33,11 @@ Run `pnpm lint`, `pnpm format:check`, and `pnpm test` before proposing changes.
 
 - **Trunk-based development.** Work directly on `main` — do not create branches
   or open pull requests.
+- **Every User Story ships with E2E tests.** When implementing a GitHub issue
+  that is a user story, add or extend a Playwright spec in `e2e/` that asserts
+  each of its acceptance criteria from the visitor's point of view. One spec per
+  story (e.g. `e2e/<feature>.spec.ts`), criteria mapped to `test()` cases. The
+  story is not done until `pnpm test:e2e` covers it and passes.
 - **Always run the pre-commit hooks** before handing work back:
   `prek run --all-files` (or `pre-commit run --all-files`). Fix anything they
   flag.
@@ -79,6 +84,7 @@ to wire the git hooks.
   last HTML report. Reports/artifacts land in `playwright-report/` and
   `test-results/` (git-ignored).
 - No CI job yet — wiring E2E into the deploy pipeline is a separate task.
+- New user stories require coverage here — see **Workflow**.
 
 ## Documentation
 
