@@ -14,6 +14,7 @@ Personal photography website. Built with [Astro](https://astro.build/) and deplo
 nvm use
 corepack enable pnpm
 pnpm install
+pnpm exec playwright install chromium   # E2E browser, one-time per machine
 prek install   # or: pre-commit install — wires the git hooks
 ```
 
@@ -28,6 +29,7 @@ All commands run from the project root:
 | `pnpm preview`      | Serve the production build locally                          |
 | `pnpm test`         | Run the unit test suite once (Vitest)                       |
 | `pnpm test:watch`   | Run Vitest in watch mode                                    |
+| `pnpm test:e2e`     | Run the Playwright E2E suite (Chromium)                     |
 | `pnpm check`        | Type-check `.astro` and TypeScript files                    |
 | `pnpm lint`         | Lint with ESLint                                            |
 | `pnpm format`       | Format the codebase with Prettier                           |
@@ -68,8 +70,10 @@ rejects anything that fails `.cz.toml` → `schema_pattern`.
 │   ├── components/  reusable .astro components (SiteHeader, SiteFooter)
 │   ├── styles/      global.css — Tailwind entry + design tokens (@theme)
 │   └── pages/       file-based routes
+├── e2e/             Playwright end-to-end specs
 ├── astro.config.mjs
 ├── eslint.config.js
+├── playwright.config.ts
 ├── vitest.config.ts
 ├── pnpm-workspace.yaml   pnpm settings (build-script allowlist)
 ├── .cz.toml              Commitizen (cz_customize) commit-message rules
@@ -134,6 +138,7 @@ than hardcoding colours or font families.
 - **ESLint** — flat config: `typescript-eslint` + `eslint-plugin-astro`, with `eslint-config-prettier` disabling stylistic rules.
 - **Prettier** — `prettier-plugin-astro` for `.astro` formatting.
 - **Vitest** — configured through `astro/config`'s `getViteConfig`; tests live next to source as `*.test.ts`.
+- **Playwright** — E2E tests in `e2e/*.spec.ts`, config in `playwright.config.ts`. Chromium only. `pnpm test:e2e` starts the Astro dev server itself (or reuses one on `:4321`). Install the browser once with `pnpm exec playwright install chromium`. No CI job yet.
 - **Commitizen** — `cz_customize` ruleset (`.cz.toml`); the `commit-msg` hook in `.pre-commit-config.yaml` runs `cz check` via `uvx`. Wire hooks with `prek install`.
 
 ## Deployment

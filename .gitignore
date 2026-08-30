@@ -4,6 +4,11 @@ dist/
 .astro/
 # test coverage
 coverage/
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 # netlify
 .netlify/
 

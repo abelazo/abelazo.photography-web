@@ -18,6 +18,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "commit": "uvx --from commitizen==4.18.0 cz commit",
     "cz": "uvx --from commitizen==4.18.0 cz"
   },
@@ -29,6 +32,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.0",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.1.0",

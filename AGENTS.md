@@ -20,6 +20,7 @@ Build-script permissions for dependencies live in `pnpm-workspace.yaml` (`allowB
 | `pnpm preview`      | Serve the production build                 |
 | `pnpm test`         | Vitest, single run                         |
 | `pnpm test:watch`   | Vitest watch mode                          |
+| `pnpm test:e2e`     | Playwright E2E suite (Chromium)            |
 | `pnpm check`        | Type-check `.astro` + TS                   |
 | `pnpm lint`         | ESLint                                     |
 | `pnpm format`       | Prettier write                             |
@@ -66,6 +67,18 @@ to wire the git hooks.
 ## Dev server
 
 `pnpm dev` runs in background mode. Manage it with `pnpm exec astro dev stop`, `astro dev status`, and `astro dev logs`.
+
+## E2E tests (Playwright)
+
+- Config: `playwright.config.ts`. Specs: `e2e/*.spec.ts`. Chromium only.
+- One-time per machine: `pnpm exec playwright install chromium`.
+- Run: `pnpm test:e2e`. Playwright starts the dev server itself (foreground,
+  via `ASTRO_DEV_BACKGROUND=1` in the config) or reuses one already running on
+  `:4321`.
+- `pnpm test:e2e:ui` for the interactive runner, `pnpm test:e2e:report` for the
+  last HTML report. Reports/artifacts land in `playwright-report/` and
+  `test-results/` (git-ignored).
+- No CI job yet — wiring E2E into the deploy pipeline is a separate task.
 
 ## Documentation
 
