@@ -69,6 +69,12 @@
     color: inherit;
   }
 
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
   img {
     display: block;
     max-width: 100%;

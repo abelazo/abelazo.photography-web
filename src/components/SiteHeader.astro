@@ -1,23 +1,65 @@
 ---
-/** Site-wide masthead. Kept deliberately spare — a wordmark and nothing else. */
-const nav: { label: string; href: string }[] = [{ label: 'Galleries', href: '/' }];
+/**
+ * Site-wide masthead: a wordmark and a minimal primary nav.
+ *
+ * Desktop: links sit inline next to the wordmark. Mobile (< md): the links
+ * collapse behind a hamburger toggle — a few lines of vanilla JS, no framework.
+ * The active section is marked with `aria-current="page"`.
+ */
+const links: { label: string; href: string }[] = [
+  { label: 'Galleries', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+];
+
 const path = Astro.url.pathname;
+
+/** A link is active for its own page and anything nested beneath it. The
+ *  Galleries link also covers the gallery detail routes. */
+function isActive(href: string): boolean {
+  if (href === '/') return path === '/' || path.startsWith('/galleries');
+  return path === href || path.startsWith(`${href}/`);
+}
 ---
 
 <header class="border-b border-line bg-surface">
   <div
-    class="mx-auto flex max-w-[var(--width-content)] items-baseline justify-between gap-6 px-6 py-5 md:px-10"
+    class="relative mx-auto flex max-w-[var(--width-content)] items-center justify-between gap-6 px-6 py-5 md:px-10"
   >
     <a href="/" class="font-serif text-lg tracking-tight hover:text-muted">Abelazo</a>
-    <nav aria-label="Primary">
-      <ul class="flex gap-6 text-sm">
+
+    <button
+      type="button"
+      class="nav-toggle -m-2 p-2 md:hidden"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M3 5h14M3 10h14M3 15h14"></path>
+      </svg>
+    </button>
+
+    <nav id="primary-nav" aria-label="Primary" class="nav-menu hidden md:block">
+      <ul
+        class="absolute inset-x-0 top-full z-10 flex flex-col gap-4 border-b border-line bg-surface px-6 py-4 text-sm md:static md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0"
+      >
         {
-          nav.map(({ label, href }) => (
+          links.map(({ label, href }) => (
             <li>
               <a
                 href={href}
-                aria-current={path === href ? 'page' : undefined}
-                class="text-muted transition-colors hover:text-ink aria-[current=page]:text-ink"
+                aria-current={isActive(href) ? 'page' : undefined}
+                class="block text-muted transition-colors hover:text-ink aria-[current=page]:text-ink"
               >
                 {label}
               </a>
@@ -28,3 +70,26 @@ const path = Astro.url.pathname;
     </nav>
   </div>
 </header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const menu = document.getElementById('primary-nav');
+
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('hidden', !open);
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>
