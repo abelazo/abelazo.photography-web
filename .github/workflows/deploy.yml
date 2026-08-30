@@ -76,11 +76,11 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # - name: Deploy to Netlify
-      #   env:
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      #     VERSION: ${{ needs.release.outputs.version }}
-      #   run: >
-      #     pnpm dlx netlify-cli@27.4.1 deploy --prod --dir=dist --no-build
-      #     --message "release v${VERSION}"
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: >
+          pnpm dlx netlify-cli@27.4.1 deploy --prod --dir=dist --no-build
+          --message "release v${VERSION}"
