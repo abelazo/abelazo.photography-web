@@ -31,6 +31,12 @@ export function galleriesSchema({ image }: SchemaContext) {
       cover: image(),
       /** Surface this gallery on the home page. */
       featured: z.boolean().default(false),
+      /**
+       * Work in progress. A draft is hidden from every production listing and
+       * has no page in the built site; it still renders in `astro dev` so it
+       * can be previewed.
+       */
+      draft: z.boolean().default(false),
       /** Manual sort key, ascending. Ties fall back to `date`, newest first. */
       order: z.number().int().nonnegative().default(0),
       /** Ordered photos. Array order is display order. */

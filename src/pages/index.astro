@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getGalleries } from '../lib/galleries';
+import { getGalleries, galleryHref } from '../lib/galleries';
 
 const galleries = await getGalleries();
 ---
@@ -12,29 +12,35 @@ const galleries = await getGalleries();
     <p class="mt-4 text-lg text-muted">Landscape and coastal work by Abel Guillen.</p>
   </section>
 
-  <ul class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-    {
-      galleries.map((gallery) => (
-        <li>
-          <article>
-            <div class="overflow-hidden bg-line">
-              <Image
-                src={gallery.data.cover}
-                alt=""
-                width={480}
-                height={320}
-                class="aspect-3/2 w-full object-cover"
-              />
-            </div>
-            <h2 class="mt-4 text-xl">{gallery.data.title}</h2>
-            <p class="mt-1 text-sm text-muted">{gallery.data.description}</p>
-            <p class="mt-2 text-xs text-muted">
-              {gallery.data.photos.length} photos
-              {gallery.data.featured ? ' · featured' : ''}
-            </p>
-          </article>
-        </li>
-      ))
-    }
-  </ul>
+  {
+    galleries.length === 0 ? (
+      <p class="mt-14 text-muted">No galleries published yet — check back soon.</p>
+    ) : (
+      <ul class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {galleries.map((gallery) => (
+          <li>
+            <article>
+              <a href={galleryHref(gallery)} class="group block">
+                <div class="overflow-hidden bg-line">
+                  <Image
+                    src={gallery.data.cover}
+                    alt=""
+                    width={480}
+                    height={320}
+                    class="aspect-3/2 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <h2 class="mt-4 text-xl group-hover:text-muted">{gallery.data.title}</h2>
+                <p class="mt-1 text-sm text-muted">{gallery.data.description}</p>
+                <p class="mt-2 text-xs text-muted">
+                  {gallery.data.photos.length} photos
+                  {gallery.data.featured ? ' · featured' : ''}
+                </p>
+              </a>
+            </article>
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </BaseLayout>

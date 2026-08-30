@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getGalleries, gallerySlug } from '../../lib/galleries';
+
+// Minimal detail page — enough for the homepage links to resolve. The thumbnail
+// grid (#8) and full metadata block (#10) build on top of this.
+export const getStaticPaths = (async () => {
+  const galleries = await getGalleries();
+  return galleries.map((gallery) => ({
+    params: { slug: gallerySlug(gallery) },
+    props: { gallery },
+  }));
+}) satisfies GetStaticPaths;
+
+const { gallery } = Astro.props;
+const { title, description, date, cover } = gallery.data;
+const captured = date.toLocaleDateString('en-GB', {
+  year: 'numeric',
+  month: 'long',
+});
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="max-w-2xl">
+    <p class="text-sm text-muted"><a href="/" class="hover:text-ink">← Galleries</a></p>
+    <h1 class="mt-4 text-3xl md:text-4xl">{title}</h1>
+    <p class="mt-3 text-lg text-muted">{description}</p>
+    <p class="mt-2 text-xs text-muted">{captured}</p>
+  </section>
+
+  <div class="mt-10 overflow-hidden bg-line">
+    <Image src={cover} alt="" width={1280} height={853} class="aspect-3/2 w-full object-cover" />
+  </div>
+</BaseLayout>

@@ -21,7 +21,12 @@ describe('galleriesSchema', () => {
     const result = schema.parse(valid);
     expect(result.date).toBeInstanceOf(Date);
     expect(result.featured).toBe(false);
+    expect(result.draft).toBe(false);
     expect(result.order).toBe(0);
+  });
+
+  it('accepts an explicit draft flag', () => {
+    expect(schema.parse({ ...valid, draft: true }).draft).toBe(true);
   });
 
   it('rejects a missing required field', () => {
