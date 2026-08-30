@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.0.1...v1.1.0) (2026-08-30)
+
+### Features
+
+* **semrel:** Generate deployments on deploy ([#28](https://github.com/abelazo/abelazo.photography-web/issues/28)) ([38d7b76](https://github.com/abelazo/abelazo.photography-web/commit/38d7b7682ada77765ccfc1d4c7d1f4da11eed930))
+
 ## [1.0.1](https://github.com/abelazo/abelazo.photography-web/compare/v1.0.0...v1.0.1) (2026-08-30)
 
 ### Bug Fixes
