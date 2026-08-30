@@ -82,5 +82,5 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           VERSION: ${{ needs.release.outputs.version }}
         run: >
-          pnpm dlx netlify-cli@27.4.1 deploy --prod --dir=dist --no-build
-          --message "release v${VERSION}"
+          pnpm --package=netlify-cli@27.4.1 dlx netlify deploy --prod --dir=dist
+          --no-build --message "release v${VERSION}"
