@@ -29,6 +29,26 @@ describe('galleriesSchema', () => {
     expect(schema.parse({ ...valid, draft: true }).draft).toBe(true);
   });
 
+  it('omits location and tags when absent', () => {
+    const result = schema.parse(valid);
+    expect(result.location).toBeUndefined();
+    expect(result.tags).toBeUndefined();
+  });
+
+  it('accepts optional location and tags', () => {
+    const result = schema.parse({ ...valid, location: 'Northumberland coast', tags: ['coastal'] });
+    expect(result.location).toBe('Northumberland coast');
+    expect(result.tags).toEqual(['coastal']);
+  });
+
+  it('rejects an empty tags array', () => {
+    expect(schema.safeParse({ ...valid, tags: [] }).success).toBe(false);
+  });
+
+  it('rejects a blank tag', () => {
+    expect(schema.safeParse({ ...valid, tags: [''] }).success).toBe(false);
+  });
+
   it('rejects a missing required field', () => {
     const noTitle: Record<string, unknown> = { ...valid };
     delete noTitle.title;

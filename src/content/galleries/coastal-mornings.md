@@ -2,6 +2,11 @@
 title: Coastal Mornings
 description: First light along a cold shoreline — tide lines, low cloud, and wet sand.
 date: 2026-02-14
+location: Northumberland coast
+tags:
+  - landscape
+  - coastal
+  - dawn
 featured: true
 order: 1
 cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg

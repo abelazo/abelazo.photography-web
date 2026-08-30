@@ -16,11 +16,12 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { gallery } = Astro.props;
-const { title, description, date, cover, photos } = gallery.data;
+const { title, description, date, location, tags, cover, photos } = gallery.data;
 const captured = date.toLocaleDateString('en-GB', {
   year: 'numeric',
   month: 'long',
 });
+const isoDate = date.toISOString().slice(0, 10);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -28,7 +29,34 @@ const captured = date.toLocaleDateString('en-GB', {
     <p class="text-sm text-muted"><a href="/" class="hover:text-ink">← Galleries</a></p>
     <h1 class="mt-4 text-3xl md:text-4xl">{title}</h1>
     <p class="mt-3 text-lg text-muted">{description}</p>
-    <p class="mt-2 text-xs text-muted">{captured}</p>
+    <dl class="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
+      <div>
+        <dt class="sr-only">Date</dt>
+        <dd><time datetime={isoDate}>{captured}</time></dd>
+      </div>
+      {
+        location && (
+          <div>
+            <dt class="sr-only">Location</dt>
+            <dd>{location}</dd>
+          </div>
+        )
+      }
+      {
+        tags && (
+          <div>
+            <dt class="sr-only">Tags</dt>
+            <dd>
+              <ul class="flex flex-wrap gap-x-3">
+                {tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
   </section>
 
   <div class="mt-10 overflow-hidden bg-line">

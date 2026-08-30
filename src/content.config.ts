@@ -27,6 +27,10 @@ export function galleriesSchema({ image }: SchemaContext) {
       description: z.string().min(1),
       /** Capture date. `YYYY-MM-DD` in frontmatter, a `Date` once parsed. */
       date: z.coerce.date(),
+      /** Where the work was shot. Optional; rendered only when set. */
+      location: z.string().min(1).optional(),
+      /** Free-form keywords. Optional; rendered only when non-empty. */
+      tags: z.array(z.string().min(1)).nonempty().optional(),
       /** Cover image, as a path relative to this markdown file. */
       cover: image(),
       /** Surface this gallery on the home page. */
