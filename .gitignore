@@ -11,6 +11,7 @@ coverage/
 /playwright/.cache/
 # netlify
 .netlify/
+deploy.json
 
 # dependencies
 node_modules/

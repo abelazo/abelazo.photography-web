@@ -65,6 +65,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      deployments: write
+    environment:
+      name: netlify
+      url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -77,10 +81,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - name: Deploy to Netlify
+        id: deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           VERSION: ${{ needs.release.outputs.version }}
-        run: >
-          pnpm --package=netlify-cli@27.4.1 dlx netlify deploy --prod --dir=dist
-          --no-build --message "release v${VERSION}"
+        run: |
+          pnpm --package=netlify-cli@27.4.1 dlx netlify deploy --prod \
+            --dir=dist --no-build --message "release v${VERSION}" --json \
+            | tee deploy.json
+          url=$(node -p "let d=require('./deploy.json'); d.url || d.deploy_url")
+          echo "url=$url" >> "$GITHUB_OUTPUT"

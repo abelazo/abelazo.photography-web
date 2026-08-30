@@ -103,7 +103,9 @@ to wire the git hooks.
    tags `vX.Y.Z`, writes `CHANGELOG.md`, bumps `package.json`, commits both back
    to `main` as `chore(release): … [skip ci]`, and publishes a GitHub Release.
 3. **`deploy`** — only when `release` cut a version. Rebuilds at the new tag and
-   runs `netlify deploy --prod` (prebuilt `dist/`, no Netlify-side build).
+   runs `netlify deploy --prod` (prebuilt `dist/`, no Netlify-side build). Runs
+   under the `netlify` GitHub Environment, so every deploy is recorded in the
+   repo's Environments / Deployments view with the live URL.
 
 Releases are semantic-release only — `cz` / `.cz.toml` stays commit-message
 linting; `cz bump` is unused.
