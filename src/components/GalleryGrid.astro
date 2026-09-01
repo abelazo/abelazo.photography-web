@@ -62,10 +62,23 @@ const tiles = await Promise.all(
   // acceptance criteria out of the box: close button, Esc, click outside the
   // image, and returning focus to the thumbnail that opened it (`returnFocus`,
   // on by default).
+  //
+  // #12 — prev/next navigation. Also PhotoSwipe out of the box: the
+  // arrowPrev/arrowNext buttons (visible on hover, toggled by tap on touch) and
+  // the ArrowLeft/ArrowRight keys. The two options below are the deliberate
+  // choices the story asks for, set explicitly so the intent is on the page:
+  //   - `loop` — wrap at the first/last photo rather than disabling the arrows.
+  //     The story is "browse the full set fluidly"; wrapping keeps that going.
+  //   - `preload` — fetch the full-res image one slide back and two ahead of the
+  //     current one, so the next/prev photo is decoded before it is shown and
+  //     there is no pop-in. (This is also PhotoSwipe's default; pinned here so a
+  //     future default change can't silently regress the criterion.)
   const lightbox = new PhotoSwipeLightbox({
     gallery: '.gallery-grid',
     children: 'a',
     pswpModule: () => import('photoswipe'),
+    loop: true,
+    preload: [1, 2],
   });
 
   // Lock background page scroll for the whole time the viewer is open.
