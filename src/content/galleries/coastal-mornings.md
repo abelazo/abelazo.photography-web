@@ -19,6 +19,14 @@ photos:
     alt: Ripples in wet sand catching soft overcast light.
   - src: ../../assets/galleries/coastal-mornings/04-first-light.jpg
     alt: Warm first light breaking across the horizon over the water.
+  - src: ../../assets/galleries/coastal-mornings/05-rock-pool.jpg
+    alt: A narrow rock pool holding still water between dark weed-covered rocks.
+  - src: ../../assets/galleries/coastal-mornings/06-gulls.jpg
+    alt: Gulls scattered across a wide bank of wet sand under flat light.
+  - src: ../../assets/galleries/coastal-mornings/07-headland.jpg
+    alt: A steep headland dropping to the sea, seen end-on in soft haze.
+  - src: ../../assets/galleries/coastal-mornings/08-outgoing-tide.jpg
+    alt: The outgoing tide draining in thin channels across a broad beach.
 ---
 
 Shot over a single February morning, working the same stretch of beach as the

@@ -14,4 +14,13 @@ test.describe('site chrome', () => {
     await page.goto('/');
     await expect(page.getByRole('contentinfo')).toContainText('Abel Guillen');
   });
+
+  test('the page sits on a light background', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/');
+    const rgb = await page.locator('body').evaluate((el) => getComputedStyle(el).backgroundColor);
+    const [r, g, b] = rgb.match(/\d+/g)!.map(Number);
+    // Light-only: even with the OS in dark mode the wall stays near-white.
+    expect((r + g + b) / 3).toBeGreaterThan(230);
+  });
 });

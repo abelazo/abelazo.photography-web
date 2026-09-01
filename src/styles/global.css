@@ -22,24 +22,13 @@
     ui-serif, 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
 
   /* Layout — max line/column width for prose and page chrome. */
-  --width-content: 72rem;
+  --width-content: 88rem;
 }
 
 /*
- * Dark mode: override the colour tokens at the `:root` level. Tailwind colour
- * utilities compile to `var(--color-*)`, so redefining the variables here is
- * enough — no `dark:` variants needed in components. (`@theme` blocks can't be
- * nested in a media query; a plain `:root` override is the supported way.)
+ * The site is light-only by design — a white gallery wall so the photographs
+ * carry every bit of tone and colour. No `prefers-color-scheme: dark` override.
  */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-canvas: #1c1917;
-    --color-surface: #262322;
-    --color-ink: #f5f5f4;
-    --color-muted: #a8a29e;
-    --color-line: #3a3633;
-  }
-}
 
 @layer base {
   html {

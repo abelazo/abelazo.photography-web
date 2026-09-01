@@ -1,12 +1,11 @@
 ---
-import { Image } from 'astro:assets';
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GalleryGrid from '../../components/GalleryGrid.astro';
 import { getGalleries, gallerySlug } from '../../lib/galleries';
 
-// Detail page: a cover hero plus the responsive thumbnail grid (#8). The full
-// metadata block (#10) builds on top of this.
+// Detail page: the metadata block (#10) sitting above the responsive thumbnail
+// grid (#8). No cover hero — the grid leads.
 export const getStaticPaths = (async () => {
   const galleries = await getGalleries();
   return galleries.map((gallery) => ({
@@ -16,7 +15,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { gallery } = Astro.props;
-const { title, description, date, location, tags, cover, photos } = gallery.data;
+const { title, description, date, location, tags, photos } = gallery.data;
 const captured = date.toLocaleDateString('en-GB', {
   year: 'numeric',
   month: 'long',
@@ -59,10 +58,6 @@ const isoDate = date.toISOString().slice(0, 10);
     </dl>
   </section>
 
-  <div class="mt-10 overflow-hidden bg-line">
-    <Image src={cover} alt="" width={1280} height={853} class="aspect-3/2 w-full object-cover" />
-  </div>
-
-  <h2 class="mt-12 text-sm text-muted">{photos.length} photos</h2>
+  <h2 class="mt-8 text-sm text-muted">{photos.length} photos</h2>
   <GalleryGrid photos={photos} />
 </BaseLayout>
