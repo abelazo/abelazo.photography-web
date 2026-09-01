@@ -15,9 +15,9 @@ const { photos } = Astro.props;
 // the grid does not shift as thumbnails come in.
 //
 // The first row loads eagerly; everything further down lazy-loads. The anchor
-// points at a larger rendition and carries the dimensions the fullscreen
-// viewer (#11) needs — until that ships, clicking a thumbnail just opens the
-// photo.
+// points at a larger rendition and carries the `data-pswp-*` dimensions the
+// fullscreen viewer (#11) reads to open PhotoSwipe at that photo. With JS off
+// the anchor still degrades to opening the image directly.
 const EAGER_COUNT = 3;
 const tiles = await Promise.all(
   photos.map(async (photo, index) => {
@@ -53,3 +53,35 @@ const tiles = await Promise.all(
     ))
   }
 </ul>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  // #11 — open/close the fullscreen viewer. PhotoSwipe gives us most of the
+  // acceptance criteria out of the box: close button, Esc, click outside the
+  // image, and returning focus to the thumbnail that opened it (`returnFocus`,
+  // on by default).
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '.gallery-grid',
+    children: 'a',
+    pswpModule: () => import('photoswipe'),
+  });
+
+  // Lock background page scroll for the whole time the viewer is open.
+  // PhotoSwipe only swallows wheel events over its own overlay; this also stops
+  // keyboard and scrollbar scrolling of the page behind it.
+  const root = document.documentElement;
+  lightbox.on('beforeOpen', () => {
+    root.style.overflow = 'hidden';
+  });
+  lightbox.on('destroy', () => {
+    root.style.overflow = '';
+  });
+
+  lightbox.init();
+
+  // Mark the grid once the click handler is live, so progressive enhancement is
+  // observable (the anchors still open the image directly until this point).
+  document.querySelector('.gallery-grid')?.setAttribute('data-pswp-ready', '');
+</script>

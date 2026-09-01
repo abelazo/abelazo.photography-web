@@ -45,6 +45,9 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    /* Reserve the scrollbar gutter so locking page scroll (e.g. the #11
+       fullscreen viewer sets `overflow: hidden` here) causes no layout shift. */
+    scrollbar-gutter: stable;
   }
 
   body {
