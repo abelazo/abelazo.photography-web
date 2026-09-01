@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.1.0...v1.2.0) (2026-09-01)
+
+### Features
+
+* Add lightbox ([#11](https://github.com/abelazo/abelazo.photography-web/issues/11)) ([0e4395a](https://github.com/abelazo/abelazo.photography-web/commit/0e4395a2be974a6413f9a4c08e10a264ba7642f8))
+
 ## [1.1.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.0.1...v1.1.0) (2026-08-30)
 
 ### Features
