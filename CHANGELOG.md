@@ -1,3 +1,9 @@
+## [1.5.1](https://github.com/abelazo/abelazo.photography-web/compare/v1.5.0...v1.5.1) (2026-09-01)
+
+### Bug Fixes
+
+* **nav:** Keyboard keys ([#17](https://github.com/abelazo/abelazo.photography-web/issues/17)) ([24117e1](https://github.com/abelazo/abelazo.photography-web/commit/24117e1ef697c6dd0fcad39f61667dc53e25178b))
+
 ## [1.5.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.4.0...v1.5.0) (2026-09-01)
 
 ### Features
