@@ -73,12 +73,93 @@ const tiles = await Promise.all(
   //     current one, so the next/prev photo is decoded before it is shown and
   //     there is no pop-in. (This is also PhotoSwipe's default; pinned here so a
   //     future default change can't silently regress the criterion.)
+  //
+  // #14 — thumbnail strip. PhotoSwipe has no filmstrip of its own, so we build
+  // one as a custom UI element (see `uiRegister` below) from the same grid
+  // anchors that drive the slides — strip index === slide index. `paddingFn`
+  // reserves a band at the bottom of the viewport on wide screens so the image
+  // never sits under the strip; on narrow viewports (< 640px) the strip is
+  // hidden (CSS) and the padding drops to 0 — the decision on the story's open
+  // question: a strip there would crowd the photo more than it helps.
+  const STRIP_BAND = 84;
+  const stripVisible = () => window.matchMedia('(min-width: 640px)').matches;
+
   const lightbox = new PhotoSwipeLightbox({
     gallery: '.gallery-grid',
     children: 'a',
     pswpModule: () => import('photoswipe'),
     loop: true,
     preload: [1, 2],
+    paddingFn: () => ({
+      top: 0,
+      bottom: stripVisible() ? STRIP_BAND : 0,
+      left: 0,
+      right: 0,
+    }),
+  });
+
+  // Build the thumbnail strip once PhotoSwipe registers its UI.
+  lightbox.on('uiRegister', () => {
+    const pswp = lightbox.pswp;
+    if (!pswp) return;
+
+    const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>('.gallery-grid li a'));
+
+    pswp.ui?.registerElement({
+      name: 'thumbstrip',
+      appendTo: 'wrapper',
+      onInit: (el) => {
+        el.className = 'pswp__thumbstrip';
+        el.setAttribute('role', 'tablist');
+        el.setAttribute('aria-label', 'Gallery photos');
+
+        // Strip interactions must not reach PhotoSwipe's tap handler on the
+        // scroll wrap, or clicking a thumbnail would also close the viewer.
+        for (const evt of ['pointerdown', 'pointerup', 'click', 'mousedown']) {
+          el.addEventListener(evt, (e) => e.stopPropagation());
+        }
+
+        const buttons = anchors.map((a, i) => {
+          const source = a.querySelector('img');
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'pswp__thumbstrip-item';
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute(
+            'aria-label',
+            source?.alt ? `Photo ${i + 1}: ${source.alt}` : `Photo ${i + 1}`,
+          );
+
+          const img = document.createElement('img');
+          if (source?.srcset) img.srcset = source.srcset;
+          img.src = source?.currentSrc || source?.src || a.href;
+          img.sizes = '80px';
+          img.alt = '';
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          btn.append(img);
+
+          btn.addEventListener('click', () => pswp.goTo(i));
+          el.append(btn);
+          return btn;
+        });
+
+        const sync = () => {
+          buttons.forEach((btn, i) => {
+            const active = i === pswp.currIndex;
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-selected', active ? 'true' : 'false');
+            btn.tabIndex = active ? 0 : -1;
+            if (active) {
+              btn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+            }
+          });
+        };
+
+        pswp.on('change', sync);
+        sync();
+      },
+    });
   });
 
   // Lock background page scroll for the whole time the viewer is open.
@@ -98,3 +179,67 @@ const tiles = await Promise.all(
   // observable (the anchors still open the image directly until this point).
   document.querySelector('.gallery-grid')?.setAttribute('data-pswp-ready', '');
 </script>
+
+<!--
+  #14 — thumbnail strip styling. Global because PhotoSwipe mounts `.pswp` on
+  <body>, out of this component's scoped-style reach. Hidden below 640px (see
+  `paddingFn` in the script — the two breakpoints must agree).
+-->
+<style is:global>
+  .pswp__thumbstrip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1500;
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior: contain;
+    background: rgba(0, 0, 0, 0.45);
+    scrollbar-width: thin;
+  }
+
+  .pswp__thumbstrip-item {
+    flex: 0 0 auto;
+    width: 5rem;
+    height: 3.5rem;
+    padding: 0;
+    border: 2px solid transparent;
+    background: none;
+    cursor: pointer;
+    opacity: 0.5;
+    transition:
+      opacity 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .pswp__thumbstrip-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pswp__thumbstrip-item:hover,
+  .pswp__thumbstrip-item:focus-visible {
+    opacity: 0.85;
+  }
+
+  .pswp__thumbstrip-item.is-active {
+    opacity: 1;
+    border-color: #fff;
+  }
+
+  @media (max-width: 639px) {
+    .pswp__thumbstrip {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pswp__thumbstrip-item {
+      transition: none;
+    }
+  }
+</style>
