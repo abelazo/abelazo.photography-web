@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.3.0...v1.4.0) (2026-09-01)
+
+### Features
+
+* **nav:** Add thumbnail strip ([#14](https://github.com/abelazo/abelazo.photography-web/issues/14)) ([852a456](https://github.com/abelazo/abelazo.photography-web/commit/852a456a3ad89c802a977f93f038fee0f3e14ba4))
+
 ## [1.3.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.2.0...v1.3.0) (2026-09-01)
 
 ### Features
