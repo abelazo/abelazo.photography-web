@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.4.0...v1.5.0) (2026-09-01)
+
+### Features
+
+* **nav:** Add zoom ([#16](https://github.com/abelazo/abelazo.photography-web/issues/16)) ([d075feb](https://github.com/abelazo/abelazo.photography-web/commit/d075febb95e8ba8c73916880473e25bf6bfe88b9))
+
 ## [1.4.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.3.0...v1.4.0) (2026-09-01)
 
 ### Features
