@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.2.0...v1.3.0) (2026-09-01)
+
+### Features
+
+* **nav:** Add prev/next buttons ([#12](https://github.com/abelazo/abelazo.photography-web/issues/12)) ([43c49ea](https://github.com/abelazo/abelazo.photography-web/commit/43c49ea45fcb9e247a0ed0b727f1c39312873aae))
+
 ## [1.2.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.1.0...v1.2.0) (2026-09-01)
 
 ### Features
