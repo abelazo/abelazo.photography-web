@@ -186,6 +186,77 @@ const tiles = await Promise.all(
     root.style.overflow = '';
   });
 
+  // #17 — keyboard navigation. PhotoSwipe already gives us arrow keys, Esc, and
+  // labelled controls. What it does not do well: its focus trap only bounces
+  // stray focus back to the dialog root (it never wraps Tab), and on a pointer
+  // open it never moves focus into the dialog at all. Three pieces below make it
+  // watertight — `inert` on the rest of the page, a Tab-wrapping handler, and an
+  // explicit focus hand-back to the opening thumbnail on close.
+
+  // 1. Everything outside `.pswp` goes `inert` while the viewer is open, so
+  //    nothing behind the overlay is focusable or reachable by Tab.
+  const pageRegions = () =>
+    Array.from(document.body.children).filter(
+      (el): el is HTMLElement => el instanceof HTMLElement && !el.classList.contains('pswp'),
+    );
+  lightbox.on('bindEvents', () => {
+    for (const el of pageRegions()) el.inert = true;
+  });
+  lightbox.on('close', () => {
+    for (const el of pageRegions()) el.inert = false;
+  });
+
+  // 2. Return focus to the thumbnail that opened the viewer. PhotoSwipe's own
+  //    `returnFocus` only fires for keyboard-opened dialogs, and `inert` has
+  //    since moved focus off the opener anyway. Capture the anchor from the
+  //    activating click (fired for Enter/Space too); restore it after teardown,
+  //    deferred a frame so it lands after any focus move PhotoSwipe makes.
+  let opener: HTMLElement | null = null;
+  document.querySelector('.gallery-grid')?.addEventListener(
+    'click',
+    (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLElement>('.gallery-grid a');
+      if (a) opener = a;
+    },
+    true,
+  );
+  lightbox.on('destroy', () => {
+    const target = opener;
+    if (target) requestAnimationFrame(() => target.focus());
+  });
+
+  // 3. Wrap Tab / Shift+Tab between the first and last visible control inside
+  //    `.pswp`. A document-level capture handler so it also catches the case
+  //    where focus is sitting on <body> (pointer open, everything else inert).
+  const onTabKey = (e: KeyboardEvent) => {
+    if (e.key !== 'Tab') return;
+    const pswpEl = lightbox.pswp?.element;
+    if (!pswpEl) return;
+
+    const focusable = Array.from(
+      pswpEl.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])'),
+    ).filter((el) => el.offsetParent !== null && !(el as HTMLButtonElement).disabled);
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    // Anything that is not one of our controls — the dialog root, or <body>
+    // after an inert opener lost focus — counts as "off the loop" and gets
+    // pulled back to an end.
+    const onControl = active instanceof HTMLElement && focusable.includes(active);
+
+    if (e.shiftKey && (!onControl || active === first)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (!onControl || active === last)) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+  lightbox.on('bindEvents', () => document.addEventListener('keydown', onTabKey, true));
+  lightbox.on('destroy', () => document.removeEventListener('keydown', onTabKey, true));
+
   lightbox.init();
 
   // Mark the grid once the click handler is live, so progressive enhancement is
@@ -242,6 +313,18 @@ const tiles = await Promise.all(
   .pswp__thumbstrip-item.is-active {
     opacity: 1;
     border-color: #fff;
+  }
+
+  /*
+    #17 — keyboard focus indicator. The site-wide :focus-visible ring in
+    global.css is near-black (--color-ink) and vanishes against PhotoSwipe's
+    dark overlay, so every control inside the viewer gets a light ring instead.
+  */
+  .pswp .pswp__button:focus-visible,
+  .pswp__thumbstrip-item:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    opacity: 1;
   }
 
   @media (max-width: 639px) {
