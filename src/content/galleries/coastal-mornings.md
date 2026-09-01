@@ -27,6 +27,8 @@ photos:
     alt: A steep headland dropping to the sea, seen end-on in soft haze.
   - src: ../../assets/galleries/coastal-mornings/08-outgoing-tide.jpg
     alt: The outgoing tide draining in thin channels across a broad beach.
+  - src: ../../assets/galleries/coastal-mornings/09-sea-fret.jpg
+    alt: Sea fret hanging over the beach at dawn, fine ripples and scattered shells across the wet sand.
 ---
 
 Shot over a single February morning, working the same stretch of beach as the

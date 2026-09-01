@@ -81,6 +81,17 @@ const tiles = await Promise.all(
   // never sits under the strip; on narrow viewports (< 640px) the strip is
   // hidden (CSS) and the padding drops to 0 — the decision on the story's open
   // question: a strip there would crowd the photo more than it helps.
+  //
+  // #16 — zoom. PhotoSwipe covers the whole story out of the box: click /
+  // double-click (desktop), double-tap / pinch (mobile) and the zoom button all
+  // toggle zoom, drag/touch pans the zoomed image, and zoom level is per-slide
+  // so it resets on prev/next. The two options below are the deliberate choices,
+  // pinned so the intent is on the page (and a future default change can't
+  // silently regress it):
+  //   - `initialZoomLevel: 'fit'` — open showing the whole frame.
+  //   - `secondaryZoomLevel: 'fill'` — click / double-tap / zoom-button zoom the
+  //     photo to fill the viewport. Pinch and ctrl/trackpad zoom still run up to
+  //     PhotoSwipe's 4×-of-fit ceiling for pixel-level detail.
   const STRIP_BAND = 84;
   const stripVisible = () => window.matchMedia('(min-width: 640px)').matches;
 
@@ -90,6 +101,8 @@ const tiles = await Promise.all(
     pswpModule: () => import('photoswipe'),
     loop: true,
     preload: [1, 2],
+    initialZoomLevel: 'fit',
+    secondaryZoomLevel: 'fill',
     paddingFn: () => ({
       top: 0,
       bottom: stripVisible() ? STRIP_BAND : 0,
