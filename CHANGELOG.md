@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.5.1...v1.6.0) (2026-09-02)
+
+### Features
+
+* **content:** Add image tile ([#19](https://github.com/abelazo/abelazo.photography-web/issues/19)) ([ad3f607](https://github.com/abelazo/abelazo.photography-web/commit/ad3f607ab53a0aa0d500dc6af184afc4eb6356a6))
+
 ## [1.5.1](https://github.com/abelazo/abelazo.photography-web/compare/v1.5.0...v1.5.1) (2026-09-01)
 
 ### Bug Fixes
