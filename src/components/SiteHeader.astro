@@ -26,11 +26,15 @@ function isActive(href: string): boolean {
   <div
     class="relative mx-auto flex max-w-[var(--width-content)] items-center justify-between gap-6 px-4 py-5 md:px-6"
   >
-    <a href="/" class="font-serif text-lg tracking-tight hover:text-muted">Abelazo</a>
+    <a
+      href="/"
+      class="-m-2.5 p-2.5 font-serif text-lg tracking-tight hover:text-muted md:m-0 md:p-0"
+      >Abelazo</a
+    >
 
     <button
       type="button"
-      class="nav-toggle -m-2 p-2 md:hidden"
+      class="nav-toggle -m-2 flex size-11 items-center justify-center md:hidden"
       aria-label="Menu"
       aria-expanded="false"
       aria-controls="primary-nav"
@@ -51,7 +55,7 @@ function isActive(href: string): boolean {
 
     <nav id="primary-nav" aria-label="Primary" class="nav-menu hidden md:block">
       <ul
-        class="absolute inset-x-0 top-full z-10 flex flex-col gap-4 border-b border-line bg-surface px-4 py-4 text-sm md:static md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0"
+        class="absolute inset-x-0 top-full z-10 flex flex-col gap-1 border-b border-line bg-surface px-4 py-2 text-sm md:static md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0"
       >
         {
           links.map(({ label, href }) => (
@@ -59,7 +63,7 @@ function isActive(href: string): boolean {
               <a
                 href={href}
                 aria-current={isActive(href) ? 'page' : undefined}
-                class="block text-muted transition-colors hover:text-ink aria-[current=page]:text-ink"
+                class="block py-3 text-muted transition-colors hover:text-ink aria-[current=page]:text-ink md:py-0"
               >
                 {label}
               </a>
