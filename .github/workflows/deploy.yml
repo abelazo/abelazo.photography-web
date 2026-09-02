@@ -57,7 +57,7 @@ jobs:
       # The `-prod` project's webServer runs `pnpm build` itself, so no separate
       # build step is needed here.
       - run: pnpm test:e2e --project=${{ matrix.project }} --project=${{ matrix.project }}-prod
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-${{ matrix.project }}
