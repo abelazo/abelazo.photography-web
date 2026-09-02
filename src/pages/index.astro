@@ -4,6 +4,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getGalleries, galleryHref } from '../lib/galleries';
 
 const galleries = await getGalleries();
+
+// #23 — lazy loading. The card covers below the fold defer to native lazy
+// loading (Astro's `<Picture>` default); the first row, which is above the fold
+// on every breakpoint up to the 4-column `xl` grid, loads eagerly so it does
+// not delay first paint. Every cover carries explicit `width`/`height`, so the
+// browser reserves the 3:2 box before the image arrives and nothing shifts.
+const EAGER_COVERS = 4;
 ---
 
 <BaseLayout title="Abelazo Photography">
@@ -17,7 +24,7 @@ const galleries = await getGalleries();
       <p class="mt-14 text-muted">No galleries published yet — check back soon.</p>
     ) : (
       <ul class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {galleries.map((gallery) => (
+        {galleries.map((gallery, index) => (
           <li>
             <article>
               <a href={galleryHref(gallery)} class="group block">
@@ -29,6 +36,7 @@ const galleries = await getGalleries();
                     width={480}
                     height={320}
                     densities={[1, 2]}
+                    loading={index < EAGER_COVERS ? 'eager' : 'lazy'}
                     class="aspect-3/2 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
                 </div>
