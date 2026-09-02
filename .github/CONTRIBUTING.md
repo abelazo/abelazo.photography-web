@@ -6,7 +6,7 @@ will accept your changes; break them and `pnpm build` fails with a pointed error
 (that is by design — see the schema in `src/content.config.ts`).
 
 If you just want to add a gallery, skip to the
-[Adding a new gallery](#adding-a-new-gallery) checklist at the end.
+[Adding a new gallery](#adding-a-new-gallery) checklist near the end.
 
 ## How a gallery is stored
 
@@ -19,6 +19,11 @@ Every gallery is two things that share one **slug**:
 
 `coastal-mornings` and `harbour-lights` already exist as working samples. The
 fastest way to make a new gallery is to copy one of them and replace its parts.
+
+There is **no index, registry, or route to edit**. Both pages that list
+galleries — the home page and each detail page — read the collection at build
+time through the helpers in `src/lib/galleries.ts`. Drop in the two paths above
+and the gallery appears; nothing else in the codebase references it.
 
 ## Naming conventions
 
@@ -52,8 +57,7 @@ NN-short-description.jpg
 - **`short-description`** — kebab-case, a couple of words describing the frame
   (`01-tide-line.jpg`, `04-first-light.jpg`). It is for your benefit when
   scanning the folder; the site never shows it.
-- **`.jpg`** — lowercase extension, always JPEG (see
-  [Image requirements](#image-requirements)).
+- **`.jpg`** — lowercase extension, JPEG.
 
 The number prefix is a **convention, not the mechanism**. Actual display order
 is the order of the `photos:` list in the markdown file. Keep the two in sync:
@@ -63,44 +67,51 @@ your files to match the list so the folder and the markdown never drift apart.
 To reorder a gallery later, reorder the `photos:` list and renumber the files to
 match.
 
-## Image requirements
+## Images
 
-Gallery photos are optimised at build time by `astro:assets` (backed by
-`sharp`): the site generates resized, modern-format derivatives and serves those.
-You commit **one source file per photo**, and it should be the largest size the
-site will ever need — no larger.
+**You do not resize or compress anything for display.** Gallery photos are
+optimised at build time by `astro:assets` (backed by `sharp`): from each source
+file the build generates resized, modern-format (`webp`) derivatives and serves
+those — a small thumbnail in the grid, a larger rendition for the fullscreen
+viewer. The `<Image />` component picks the right one per layout and screen.
+Commit the photo; the build does the rest. No step in the publish flow requires
+Photoshop, an export preset, or a "web" size.
 
-| Property     | Requirement                                                                                         |
-| :----------- | :-------------------------------------------------------------------------------------------------- |
-| Format       | JPEG (`.jpg`). Export at quality ~85.                                                               |
-| Colour space | sRGB. Convert before export — wide-gamut files render wrong in browsers.                            |
-| Resolution   | Long edge **2560 px**. Smaller is fine for a photo that is never shown large; never larger.         |
-| File size    | Aim for **under 700 KB** per file, hard ceiling 1.5 MB. Re-export at lower quality if you are over. |
-| Metadata     | Strip EXIF/GPS on export. Keep a copyright tag if you want one; drop location data.                 |
-| Orientation  | Bake rotation in. Don't rely on an EXIF orientation flag.                                           |
+The one real constraint is **git**: every source file you commit lives in the
+repository forever and ships in every clone and every deploy. So the source
+should be the largest size the site will ever need — and no larger.
 
-Why the ceiling matters: every source file lives in git forever. A folder of
-8 MB exports bloats every clone and every deploy. See issue [#22] for the
-repo-size budget.
+| Property     | Guidance                                                                                                       |
+| :----------- | :------------------------------------------------------------------------------------------------------------- |
+| Format       | JPEG (`.jpg`). A high-quality export straight from your editor is fine.                                        |
+| Colour space | sRGB. Convert wide-gamut files before export — they render wrong in browsers.                                  |
+| Resolution   | Long edge around **2560 px**. The build never serves a derivative wider than 2400 px, so more is dead weight.  |
+| File size    | Aim **under ~1 MB** per file. If a file is several MB, re-export it smaller — the build won't need the pixels. |
+| Metadata     | Strip EXIF/GPS on export. Keep a copyright tag if you want; drop location data.                                |
+| Orientation  | Bake rotation in. Don't rely on an EXIF orientation flag.                                                      |
+
+Nothing here is checked by `pnpm build` — a 12 MP straight-off-the-camera JPEG
+builds fine. It is a repo-hygiene budget (see issue [#22]), not a schema rule.
 
 ### Cover image
 
-`cover:` in the frontmatter points at **one** of the gallery's own photos — the
-single frame that represents the whole set on the home page and gallery list.
+`cover:` in the frontmatter points at **one** image — the single frame that
+represents the whole set on the home page and gallery list.
 
 - Use a path relative to the markdown file:
   `../../assets/galleries/<slug>/01-tide-line.jpg`.
 - It is almost always the first photo (`01-…`), but it does not have to be.
+- It is usually also listed in `photos:` — that is fine and normal. It does not
+  have to be.
 - Landscape frames sit best in the grid. A strong, uncluttered image reads
   better at thumbnail size than a busy one.
-- The cover can also appear inside the gallery — listing it in `photos:` as well
-  is fine and normal.
 
 ### Alt text
 
 Every entry in `photos:` needs an `alt:` string. The build **fails** on a
 missing or empty one — there are no decorative images in a photography
-portfolio.
+portfolio. (The cover does not take alt text; it is presented decoratively next
+to the title it illustrates.)
 
 Write it for someone who cannot see the photo:
 
@@ -115,43 +126,74 @@ Weak: `Beach photo` · `IMG_4021` · `Coastal Mornings`
 
 ## Frontmatter reference
 
+The schema in `src/content.config.ts` is **strict**: every field below is
+accepted, anything else fails the build.
+
 ```yaml
 ---
-title: Coastal Mornings # shown in headings and nav
-description: First light along a cold shoreline. # 1–2 sentences, reused as meta description
-date: 2026-02-14 # capture date, YYYY-MM-DD
-featured: true # optional, default false — surfaces on the home page
-order: 1 # optional, default 0 — manual sort key, ascending; ties break by date, newest first
-cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
-photos:
+title: Coastal Mornings # required — shown in headings and nav
+description: First light along a cold shoreline. # required — 1–2 sentences, reused as meta description
+date: 2026-02-14 # required — capture date, YYYY-MM-DD
+cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg # required — path relative to this file
+photos: # required — at least one; array order is display order
   - src: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
     alt: A dark tide line curving across pale wet sand at dawn.
   - src: ../../assets/galleries/coastal-mornings/02-low-cloud.jpg
     alt: Low grey cloud pressing down over a flat, calm sea.
+
+# --- everything below is optional ---
+location: Northumberland coast # rendered on the detail page only when set
+tags: # rendered only when non-empty; must have at least one entry if present
+  - landscape
+  - coastal
+featured: false # default false — true surfaces the gallery on the home page
+draft: false # default false — see "Drafts" below
+order: 1 # default 0 — manual sort key, ascending; ties break by date, newest first
+slug: coastal-mornings # default: the file name; only set to make the URL differ
 ---
-Optional prose body. Markdown. Shown on the gallery page above or beside the
-photos. Leave it out if you have nothing to say.
+Optional prose body. Markdown. Shown on the gallery page above the photos. Leave
+it out if you have nothing to say.
 ```
 
-`slug:` is the only other accepted field (see [The slug](#the-slug)). Any field
-not listed here fails the build.
+| Field         | Required | Type              | Notes                                                              |
+| :------------ | :------: | :---------------- | :----------------------------------------------------------------- |
+| `title`       |   yes    | string            | Headings and nav.                                                  |
+| `description` |   yes    | string            | 1–2 sentences; reused as the meta description.                     |
+| `date`        |   yes    | `YYYY-MM-DD`      | Capture date.                                                      |
+| `cover`       |   yes    | image path        | Relative to the markdown file.                                     |
+| `photos`      |   yes    | list              | `{ src, alt }` each; array order is display order; `alt` required. |
+| `location`    |    no    | string            | Shown on the detail page when set.                                 |
+| `tags`        |    no    | list of strings   | Shown on the detail page when non-empty.                           |
+| `featured`    |    no    | boolean (`false`) | `true` → also appears on the home page.                            |
+| `draft`       |    no    | boolean (`false`) | `true` → hidden from the built site, visible in `pnpm dev`.        |
+| `order`       |    no    | integer (`0`)     | Ascending sort key; ties break by `date`, newest first.            |
+| `slug`        |    no    | string            | URL slug; defaults to the file name.                               |
 
-Full field types are also tabulated in the [README](../README.md#content).
+### Drafts
+
+Set `draft: true` to work on a gallery in the open without publishing it. A
+draft renders in `pnpm dev` so you can preview it, but is excluded from the
+production build entirely — no home-page card, no detail page. Flip it to
+`false` (or delete the line) in the commit that publishes.
+
+### Sorting
+
+Both listings sort the same way: `order` ascending, then `date` newest-first for
+ties. New galleries with no `order` get `0` and sort purely by date. Use `order`
+only when you want to pin something out of date sequence.
 
 ## Adding a new gallery
 
-A start-to-finish checklist. You need the repo checked out and set up once
-(`README` → Setup).
+Start-to-finish. Assumes the repo is checked out and set up once (see the
+[README](../README.md#setup)). Trunk-based: you work on `main`, no branch, no
+pull request.
 
 1. **Choose a slug** — kebab-case, permanent, e.g. `winter-harbour`. See
    [The slug](#the-slug).
 
-2. **Prepare the photos** — export 3–15 JPEGs that meet
-   [Image requirements](#image-requirements): sRGB, long edge 2560 px, quality
-   ~85, EXIF stripped, under ~700 KB each.
-
-3. **Create the image folder** and name the files with number prefixes in the
-   order you want them shown:
+2. **Create the image folder** and drop the photos in, named with number
+   prefixes in the order you want them shown. No resizing — commit the files as
+   exported (see [Images](#images) for the git-size budget):
 
    ```
    src/assets/galleries/winter-harbour/
@@ -160,49 +202,71 @@ A start-to-finish checklist. You need the repo checked out and set up once
    └── 03-last-light.jpg
    ```
 
-4. **Copy a sample markdown file** to `src/content/galleries/winter-harbour.md`:
+3. **Copy a sample markdown file** to `src/content/galleries/winter-harbour.md`:
 
    ```sh
    cp src/content/galleries/harbour-lights.md src/content/galleries/winter-harbour.md
    ```
 
-5. **Edit the frontmatter** (see [Frontmatter reference](#frontmatter-reference)):
+4. **Write the frontmatter** (see
+   [Frontmatter reference](#frontmatter-reference)):
    - `title`, `description`, `date`.
    - `cover:` → one of your photos, usually `01-…`.
    - Replace the `photos:` list with one `- src: … / alt: …` block per file, in
      display order. Write real alt text for each.
-   - Set `featured: true` only if it should appear on the home page. Set `order:`
-     if you care where it sorts.
-   - Delete or rewrite the prose body below the `---`.
+   - `featured: true` only if it should appear on the home page. `order:` only
+     if you need it out of date sequence. `location:` / `tags:` if you want
+     them.
+   - Delete or rewrite the prose body below the closing `---`.
 
-6. **Preview it** — `pnpm dev`, open <http://localhost:4321>, check the gallery
-   looks right and the cover is the frame you meant.
+5. **Preview it** — `pnpm dev`, open <http://localhost:4321>. Check the card on
+   the home page, open the gallery, click a photo into the fullscreen viewer,
+   step through with the arrows. The cover should be the frame you meant.
 
-7. **Validate** — `pnpm build`. This runs the schema check; a red error names the
-   exact field and file to fix. Also run `pnpm format` so the markdown is
-   formatted consistently.
+6. **Validate and format** — `pnpm build` runs the schema check; a red error
+   names the exact field and file to fix. Then `pnpm format` so the markdown is
+   consistent. Optionally `pnpm test:e2e` to run the full visitor-facing suite
+   against your addition.
 
-8. **Commit** — one commit for the gallery. The message must follow the
+7. **Run the pre-commit hooks** — `prek run --all-files` (or
+   `pre-commit run --all-files`). Fix anything they flag.
+
+8. **Commit to `main`.** One commit for the gallery. The message must follow the
    [commit convention](../README.md#commit-convention) and end with an issue or
-   PR number:
+   PR number. Use `feat` — it is what triggers a release and therefore a deploy:
 
    ```
    feat(content): add winter-harbour gallery (#NN)
    ```
 
-9. **Open a pull request.** Netlify builds a preview deploy; check the gallery on
-   that URL before merging.
+   The owner reviews the working tree and commits; see the project's
+   `CLAUDE.md` if you are unsure whether to commit yourself.
+
+9. **Push.** `.github/workflows/deploy.yml` takes over:
+   `verify` (lint, format, unit tests, build, E2E) → `release`
+   (semantic-release cuts `vX.Y.Z` from the `feat` commit) → `deploy`
+   (`netlify deploy --prod` of the prebuilt `dist/`). A few minutes later the
+   gallery is live at `/galleries/winter-harbour/` and on the home page. If
+   `verify` fails, GitHub emails the owner and nothing deploys.
+
+There is no manual deploy step and no Netlify dashboard to touch — CI is the
+only route to production.
 
 ## Editing or removing a gallery
 
 - **Reorder photos** — reorder the `photos:` list and renumber the files to
   match.
 - **Swap a photo** — drop the new file in, update its `src`/`alt`, keep the
-  numbering consistent.
+  numbering consistent, delete the old file.
+- **Reorder galleries** — set `order:` on the ones you want to pin; leave the
+  rest to sort by date.
+- **Unpublish temporarily** — set `draft: true` and push. It drops off the live
+  site on the next deploy and stays previewable in `pnpm dev`.
 - **Rename a gallery** — you can't, cleanly: the slug is the permanent URL.
   Removing the old one and adding a new one is the honest description of what
   that is.
 - **Remove a gallery** — delete both `src/content/galleries/<slug>.md` and
-  `src/assets/galleries/<slug>/`. Nothing else references it.
+  `src/assets/galleries/<slug>/`. Nothing else references it. Commit as `fix` or
+  `chore` per the [commit convention](../README.md#commit-convention).
 
 [#22]: https://github.com/abelazo/abelazo.photography-web/issues/22

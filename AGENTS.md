@@ -115,6 +115,33 @@ GitHub Actions is the only path to production. Requires repo secrets
 `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`, and repo Actions permissions set to
 "Read and write" so semantic-release can push.
 
+## Content — adding a gallery
+
+The site's only content type is **photo galleries**. Full rules (naming, image
+budget, frontmatter schema, editing/removing) live in
+[`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) — read it before touching
+galleries. Short version:
+
+- A gallery is two paths sharing one kebab-case **slug**: a markdown file
+  `src/content/galleries/<slug>.md` and an image folder
+  `src/assets/galleries/<slug>/`. Nothing else references it — no index or route
+  to edit. Both listings (home page, detail page) read the collection at build
+  time via `src/lib/galleries.ts`.
+- Frontmatter is validated by the strict Zod schema in `src/content.config.ts`;
+  a missing or mistyped field fails `pnpm build` with a pointed error. Required:
+  `title`, `description`, `date` (`YYYY-MM-DD`), `cover` (path relative to the
+  md file), `photos` (`{ src, alt }` list, array order = display order, `alt`
+  non-empty). Optional: `location`, `tags`, `featured` (home page), `draft`
+  (hidden in prod, visible in `pnpm dev`), `order`, `slug`.
+- **No manual image resizing or compression.** `astro:assets` (`sharp`)
+  generates the served derivatives at build time. Commit one source JPEG per
+  photo, sRGB, long edge ~2560 px, ideally under ~1 MB — a git-repo-size budget
+  (issue #22), not a schema rule.
+- Steps: create folder → add images (`NN-description.jpg`) → copy a sample md
+  and write frontmatter → `pnpm dev` preview → `pnpm build` + `pnpm format` →
+  `prek run --all-files` → commit `feat(content): add <slug> gallery (#NN)` →
+  push. `feat` cuts a release, which triggers the Netlify deploy.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
