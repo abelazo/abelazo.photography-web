@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.9.1...v1.10.0) (2026-09-02)
+
+### Features
+
+* **content:** Add sitemap and robots.txt ([#26](https://github.com/abelazo/abelazo.photography-web/issues/26)) ([988c41b](https://github.com/abelazo/abelazo.photography-web/commit/988c41b96ec8c8b98bd3457b059aeb3f5646fb93))
+
 ## [1.9.1](https://github.com/abelazo/abelazo.photography-web/compare/v1.9.0...v1.9.1) (2026-09-02)
 
 ### Bug Fixes
