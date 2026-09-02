@@ -142,6 +142,12 @@ galleries. Short version:
   and write frontmatter → `pnpm dev` preview → `pnpm build` + `pnpm format` →
   `prek run --all-files` → commit `feat(content): add <slug> gallery (#NN)` →
   push. `feat` cuts a release, which triggers the Netlify deploy.
+- **Curating** (reorder / unpublish / remove) is frontmatter-only, no code:
+  `order` ascending then `date` newest-first drives the listing (defaulted
+  galleries sit at `0`, ahead of `order: 1`); `draft: true` pulls a gallery
+  from the production build but keeps it in `pnpm dev`; removing = delete both
+  paths. Commit as `fix` (not `chore` — `chore` never deploys). Full process:
+  CONTRIBUTING "Curating the home page".
 
 ## Documentation
 

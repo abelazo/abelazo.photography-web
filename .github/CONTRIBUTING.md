@@ -196,6 +196,10 @@ Both listings sort the same way: `order` ascending, then `date` newest-first for
 ties. New galleries with no `order` get `0` and sort purely by date. Use `order`
 only when you want to pin something out of date sequence.
 
+Reordering, unpublishing, and removing a live gallery each have a step-by-step
+in [Curating the home page](#curating-the-home-page-reorder-unpublish-remove)
+below.
+
 ## Adding a new gallery
 
 Start-to-finish. Assumes the repo is checked out and set up once (see the
@@ -266,21 +270,112 @@ pull request.
 There is no manual deploy step and no Netlify dashboard to touch — CI is the
 only route to production.
 
-## Editing or removing a gallery
+## Editing a gallery's photos
 
 - **Reorder photos** — reorder the `photos:` list and renumber the files to
   match.
 - **Swap a photo** — drop the new file in, update its `src`/`alt`, keep the
   numbering consistent, delete the old file.
-- **Reorder galleries** — set `order:` on the ones you want to pin; leave the
-  rest to sort by date.
-- **Unpublish temporarily** — set `draft: true` and push. It drops off the live
-  site on the next deploy and stays previewable in `pnpm dev`.
-- **Rename a gallery** — you can't, cleanly: the slug is the permanent URL.
-  Removing the old one and adding a new one is the honest description of what
-  that is.
-- **Remove a gallery** — delete both `src/content/galleries/<slug>.md` and
-  `src/assets/galleries/<slug>/`. Nothing else references it. Commit as `fix` or
-  `chore` per the [commit convention](../README.md#commit-convention).
+
+## Curating the home page: reorder, unpublish, remove
+
+Everything below is a **frontmatter edit** (or a file deletion) — no code
+changes, no route to touch. The home page and every detail page read one sorted
+collection through `src/lib/galleries.ts`
+([`getGalleries`](../src/lib/galleries.ts)), so a change moves a gallery
+everywhere at once and takes effect on the **next deploy**. Commit it as `fix`
+so the pipeline cuts a release and redeploys ([Which commit
+type?](#which-commit-type) below); `feat` is only for new content.
+
+### Reorder galleries
+
+The listing sorts by **`order` ascending, then `date` newest-first for ties**
+(`byDisplayOrder` in `src/lib/galleries.ts`).
+
+- Every gallery without an explicit `order` gets `0`, so by default the whole
+  site is in date order, newest first. Leave `order` off and you never think
+  about it.
+- A **lower number lists earlier**, ahead of date. `0` (the default) is the
+  lowest in normal use, so any gallery still on the default sorts **above** one
+  you have given `order: 1`.
+- `order` is a sort key, not a slot number: gaps are fine, and it need not run
+  `1, 2, 3…`.
+
+Because a defaulted gallery sits at `0`, the reliable move is to **set an
+explicit `order` on every gallery whose position you care about**, top to
+bottom. Spacing the values (`10, 20, 30`) leaves room to slot one in later
+without renumbering the rest.
+
+Worked example — three galleries, default date order:
+
+```
+autumn-fell   2026-10-01     harbour   2025-11-30     coastal   2026-02-14
+   (newest, lists first)                            (lists last)
+```
+
+To force the order `harbour → coastal → autumn-fell`:
+
+```yaml
+# harbour.md       →  order: 10
+# coastal.md       →  order: 20
+# autumn-fell.md   →  order: 30
+```
+
+Leaving `autumn-fell` on the default `0` would put it **first**, not last —
+that's the one trap. Give every gallery in the sequence a number.
+
+### Unpublish a gallery (keep the files)
+
+Set `draft: true` in its frontmatter and push.
+
+- It **drops off the live site on the next deploy** — no home-page card, no
+  `/galleries/<slug>/` page (the route stops being generated).
+- It stays **fully previewable in `pnpm dev`**, drafts and all, so you can keep
+  working on it.
+- Its markdown and images stay in the repo untouched. Re-publish by deleting the
+  `draft: true` line (or setting it `false`) and pushing again.
+
+This is the reversible option. Use it for seasonal work, a gallery you are
+revising, or anything you might bring back.
+
+### Remove a gallery permanently
+
+Delete both paths:
+
+```sh
+rm src/content/galleries/<slug>.md
+rm -r src/assets/galleries/<slug>/
+```
+
+Nothing else references the gallery — no index, no registry. Build, run the
+hooks, commit, push:
+
+```
+fix(content): remove <slug> gallery (#NN)
+```
+
+The source files are gone from `HEAD` but remain in git history; the deployed
+site drops the gallery on the next deploy. The URL `/galleries/<slug>/` will
+404 — only do this for a gallery you are sure is not linked from anywhere
+external.
+
+### Rename a gallery
+
+You can't, cleanly: the slug is the permanent URL. Renaming is really _remove
+the old gallery, add a new one_ — do both steps above, and accept that the old
+URL 404s.
+
+### Which commit type?
+
+| Change                         | Type             | Cuts a release / deploy?    |
+| :----------------------------- | :--------------- | :-------------------------- |
+| New gallery                    | `feat`           | yes (minor)                 |
+| Reorder, unpublish, re-publish | `fix`            | yes (patch)                 |
+| Remove a gallery               | `fix`            | yes (patch)                 |
+| Pure copy-edit / typo fix      | `fix` or `chore` | `chore` does **not** deploy |
+
+If a curation change must reach production, do **not** use `chore` — the
+pipeline only deploys after a release, and `chore` cuts none. See
+[Deploy pipeline](../CLAUDE.md#deploy-pipeline).
 
 [#22]: https://github.com/abelazo/abelazo.photography-web/issues/22
