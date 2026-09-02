@@ -1,3 +1,9 @@
+## [1.8.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.7.0...v1.8.0) (2026-09-02)
+
+### Features
+
+* **content:** Add gallery order ([#21](https://github.com/abelazo/abelazo.photography-web/issues/21)) ([2534497](https://github.com/abelazo/abelazo.photography-web/commit/2534497c0d405dd8a284fc237ec55650ae92b9e6))
+
 ## [1.7.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.6.0...v1.7.0) (2026-09-02)
 
 ### Features
