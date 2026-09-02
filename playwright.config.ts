@@ -1,13 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright E2E config. Chromium only (see issue #41 / CONTRIBUTING).
+ * Playwright E2E config. Runs across all three engines — Chromium, Firefox and
+ * WebKit (issue #32) — so cross-browser regressions are caught in the pipeline,
+ * not after deploy.
  *
- * Two servers, two projects:
- *  - `chromium` runs every spec against the Astro **dev** server, which
- *    Playwright starts for you — or reuses if you already have `pnpm dev`
- *    running locally.
- *  - `chromium-prod` runs the build-only specs (sitemap / robots, issue #26)
+ * Three engines, two servers, six projects:
+ *  - `chromium` / `firefox` / `webkit` run every spec against the Astro **dev**
+ *    server, which Playwright starts for you — or reuses if you already have
+ *    `pnpm dev` running locally.
+ *  - `<engine>-prod` run the build-only specs (sitemap / robots, issue #26)
  *    against `astro preview` on a **production build**. `@astrojs/sitemap` is
  *    an `astro:build:done` integration — it emits nothing under `astro dev` —
  *    so those artefacts can only be asserted against a real build.
@@ -19,6 +21,13 @@ const prodBaseURL = `http://localhost:${PROD_PORT}`;
 
 /** Specs that need a production build (served by `astro preview`). */
 const PROD_SPECS = /sitemap-robots\.spec\.ts/;
+
+/** Engine → Playwright device descriptor. */
+const BROWSERS = [
+  { name: 'chromium', device: 'Desktop Chrome' },
+  { name: 'firefox', device: 'Desktop Firefox' },
+  { name: 'webkit', device: 'Desktop Safari' },
+] as const;
 
 export default defineConfig({
   testDir: './e2e',
@@ -32,16 +41,16 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
-    {
-      name: 'chromium',
+    ...BROWSERS.map(({ name, device }) => ({
+      name,
       testIgnore: PROD_SPECS,
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'chromium-prod',
+      use: { ...devices[device] },
+    })),
+    ...BROWSERS.map(({ name, device }) => ({
+      name: `${name}-prod`,
       testMatch: PROD_SPECS,
-      use: { ...devices['Desktop Chrome'], baseURL: prodBaseURL },
-    },
+      use: { ...devices[device], baseURL: prodBaseURL },
+    })),
   ],
   webServer: [
     {
@@ -66,9 +75,10 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
       // Same agent-shell auto-daemonise escape hatch as the dev server above —
-      // `astro preview` daemonises too. Keep it in the foreground so Playwright
-      // owns its lifecycle.
-      env: { ASTRO_DEV_BACKGROUND: '1' },
+      // `astro preview` daemonises too, but reads its own env var
+      // (`ASTRO_PREVIEW_BACKGROUND`, not `ASTRO_DEV_BACKGROUND`). Keep it in the
+      // foreground so Playwright owns its lifecycle.
+      env: { ASTRO_PREVIEW_BACKGROUND: '1' },
     },
   ],
 });

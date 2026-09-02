@@ -10,8 +10,8 @@ import { test, expect } from '@playwright/test';
  *  3. Draft / unpublished galleries excluded from the sitemap.
  *
  * `@astrojs/sitemap` is an `astro:build:done` integration — it emits nothing
- * under `astro dev`. This spec therefore runs in the `chromium-prod` project
- * (see `playwright.config.ts`), which serves a real production build via
+ * under `astro dev`. This spec therefore runs in the `<engine>-prod` projects
+ * (see `playwright.config.ts`), which serve a real production build via
  * `astro preview`.
  *
  * Criterion 3 has no draft in the sample content to point at. The mechanism —

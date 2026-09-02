@@ -78,15 +78,19 @@ to wire the git hooks.
 
 ## E2E tests (Playwright)
 
-- Config: `playwright.config.ts`. Specs: `e2e/*.spec.ts`. Chromium only.
-- One-time per machine: `pnpm exec playwright install chromium`.
+- Config: `playwright.config.ts`. Specs: `e2e/*.spec.ts`. All three engines —
+  Chromium, Firefox, WebKit (issue #32).
+- One-time per machine: `pnpm exec playwright install chromium firefox webkit`.
 - Run: `pnpm test:e2e`. Playwright starts the dev server itself (foreground,
   via `ASTRO_DEV_BACKGROUND=1` in the config) or reuses one already running on
   `:4321`.
-- Two projects: `chromium` runs every spec against `astro dev` (`:4321`);
-  `chromium-prod` runs the build-only specs (`sitemap-robots.spec.ts`) against
-  `astro preview` on a real production build (`:4322`, `pnpm build` first).
-  Build-only integrations like `@astrojs/sitemap` emit nothing under `astro dev`.
+- Six projects: `chromium` / `firefox` / `webkit` run every spec against
+  `astro dev` (`:4321`); `<engine>-prod` run the build-only specs
+  (`sitemap-robots.spec.ts`) against `astro preview` on a real production build
+  (`:4322`, `pnpm build` first). Build-only integrations like `@astrojs/sitemap`
+  emit nothing under `astro dev`.
+- Firefox skips the `zoom (mobile)` block — Playwright's Firefox rejects
+  `isMobile` device emulation.
 - `pnpm test:e2e:ui` for the interactive runner, `pnpm test:e2e:report` for the
   last HTML report. Reports/artifacts land in `playwright-report/` and
   `test-results/` (git-ignored).

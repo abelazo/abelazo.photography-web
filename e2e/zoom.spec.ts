@@ -168,6 +168,12 @@ test.describe('zoom', () => {
 });
 
 test.describe('zoom (mobile)', () => {
+  // `isMobile` device emulation is a Chromium/WebKit feature — Playwright's
+  // Firefox rejects the context option outright, so skip this engine here.
+  test.skip(
+    ({ browserName }) => browserName === 'firefox',
+    'isMobile emulation is not supported in Firefox',
+  );
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
 
   test('double-tap toggles zoom', async ({ page }) => {

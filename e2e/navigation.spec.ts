@@ -86,7 +86,15 @@ test.describe('site navigation', () => {
     });
   });
 
-  test('is keyboard navigable with visible focus', async ({ page }) => {
+  test('is keyboard navigable with visible focus', async ({ page, browserName }) => {
+    // macOS Playwright WebKit follows the system "Full Keyboard Access" setting —
+    // Tab does not move focus to links, and Playwright cannot toggle it. The
+    // Linux WebKit build used in CI behaves like Chromium, so this stays covered
+    // there; only the local macOS run skips it.
+    test.skip(
+      browserName === 'webkit' && process.platform === 'darwin',
+      'macOS WebKit does not move Tab focus to links',
+    );
     await page.goto('/');
 
     // Tab order: the wordmark link comes before the nav links.

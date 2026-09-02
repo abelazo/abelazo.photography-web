@@ -32,11 +32,42 @@ jobs:
       - run: pnpm check
       - run: pnpm test
       - run: pnpm build
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
+
+  e2e:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      # One job per browser engine, in parallel. A failure in one engine
+      # doesn't cancel the others — collect every engine's result.
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps ${{ matrix.project }}
+      # The `-prod` project's webServer runs `pnpm build` itself, so no separate
+      # build step is needed here.
+      - run: pnpm test:e2e --project=${{ matrix.project }} --project=${{ matrix.project }}-prod
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 3
 
   release:
-    needs: verify
+    needs: [verify, e2e]
     runs-on: ubuntu-latest
     permissions:
       contents: write

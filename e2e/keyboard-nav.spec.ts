@@ -48,6 +48,16 @@ async function fullSrcForThumb(page: Page, index: number) {
   return new URL(href, page.url()).href;
 }
 
+/** macOS Playwright WebKit follows the system "Full Keyboard Access" setting —
+ *  Tab does not move focus to links/buttons, which Playwright cannot toggle. The
+ *  Linux WebKit build used in CI behaves like Chromium, so Tab-traversal checks
+ *  stay covered there; only the local macOS run skips them. */
+const skipMacWebKit = (browserName: string) =>
+  test.skip(
+    browserName === 'webkit' && process.platform === 'darwin',
+    'macOS WebKit does not move Tab focus to links/buttons',
+  );
+
 /** Where focus currently sits inside the viewer: a compact, stable descriptor. */
 function activeDescriptor(page: Page) {
   return page.evaluate(() => {
@@ -84,7 +94,11 @@ test.describe('keyboard navigation', () => {
     await expect(page.locator('.pswp')).toBeHidden();
   });
 
-  test('Tab cycles the visible controls and never leaves the lightbox', async ({ page }) => {
+  test('Tab cycles the visible controls and never leaves the lightbox', async ({
+    page,
+    browserName,
+  }) => {
+    skipMacWebKit(browserName);
     await openFirstGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
@@ -174,7 +188,11 @@ test.describe('keyboard navigation', () => {
     }
   });
 
-  test('a control focused by keyboard shows a visible, light focus ring', async ({ page }) => {
+  test('a control focused by keyboard shows a visible, light focus ring', async ({
+    page,
+    browserName,
+  }) => {
+    skipMacWebKit(browserName);
     await openFirstGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
