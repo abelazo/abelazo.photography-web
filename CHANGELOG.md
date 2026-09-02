@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.6.0...v1.7.0) (2026-09-02)
+
+### Features
+
+* **content:** Add image optimization on build ([#20](https://github.com/abelazo/abelazo.photography-web/issues/20)) ([cf0711b](https://github.com/abelazo/abelazo.photography-web/commit/cf0711bcb0994400bc1e00cfa5578ee2ddec8b0d))
+
 ## [1.6.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.5.1...v1.6.0) (2026-09-02)
 
 ### Features

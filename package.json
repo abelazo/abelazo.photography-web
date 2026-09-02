@@ -1,7 +1,7 @@
 {
   "name": "abelazo.photography-web",
   "type": "module",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "packageManager": "pnpm@11.24.0",
   "engines": {
     "node": ">=24.20.0",
