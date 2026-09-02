@@ -1,3 +1,9 @@
+## [1.9.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.8.0...v1.9.0) (2026-09-02)
+
+### Features
+
+* **content:** Add support to gallery lazy loading ([#23](https://github.com/abelazo/abelazo.photography-web/issues/23)) ([b0577f6](https://github.com/abelazo/abelazo.photography-web/commit/b0577f64f3b4ca72d2fc31ff066da99a19f005e7))
+
 ## [1.8.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.7.0...v1.8.0) (2026-09-02)
 
 ### Features
