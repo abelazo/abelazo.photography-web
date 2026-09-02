@@ -1,3 +1,9 @@
+## [1.9.1](https://github.com/abelazo/abelazo.photography-web/compare/v1.9.0...v1.9.1) (2026-09-02)
+
+### Bug Fixes
+
+* **ui:** meet mobile tap-target minimums ([#27](https://github.com/abelazo/abelazo.photography-web/issues/27)) ([1bb54e5](https://github.com/abelazo/abelazo.photography-web/commit/1bb54e5a9b2679847ef4a6e5a78bc2485c60644a))
+
 ## [1.9.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.8.0...v1.9.0) (2026-09-02)
 
 ### Features
