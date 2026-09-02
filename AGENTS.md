@@ -83,6 +83,10 @@ to wire the git hooks.
 - Run: `pnpm test:e2e`. Playwright starts the dev server itself (foreground,
   via `ASTRO_DEV_BACKGROUND=1` in the config) or reuses one already running on
   `:4321`.
+- Two projects: `chromium` runs every spec against `astro dev` (`:4321`);
+  `chromium-prod` runs the build-only specs (`sitemap-robots.spec.ts`) against
+  `astro preview` on a real production build (`:4322`, `pnpm build` first).
+  Build-only integrations like `@astrojs/sitemap` emit nothing under `astro dev`.
 - `pnpm test:e2e:ui` for the interactive runner, `pnpm test:e2e:report` for the
   last HTML report. Reports/artifacts land in `playwright-report/` and
   `test-results/` (git-ignored).
@@ -126,7 +130,10 @@ galleries. Short version:
   `src/content/galleries/<slug>.md` and an image folder
   `src/assets/galleries/<slug>/`. Nothing else references it — no index or route
   to edit. Both listings (home page, detail page) read the collection at build
-  time via `src/lib/galleries.ts`.
+  time via `src/lib/galleries.ts`. A published gallery's page is picked up
+  automatically by `@astrojs/sitemap` (`sitemap-index.xml` → `sitemap-0.xml`);
+  a `draft` gallery has no built page, so it never reaches the sitemap.
+  `public/robots.txt` allows all crawling and points at the sitemap.
 - Frontmatter is validated by the strict Zod schema in `src/content.config.ts`;
   a missing or mistyped field fails `pnpm build` with a pointed error. Required:
   `title`, `description`, `date` (`YYYY-MM-DD`), `cover` (path relative to the

@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/sitemap": "^3.7.4",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@semantic-release/changelog": "^7.0.0",

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://abelazo.photography/sitemap-index.xml
