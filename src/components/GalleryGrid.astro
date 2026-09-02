@@ -4,7 +4,7 @@ import type { ImageMetadata } from 'astro';
 
 interface Props {
   /** Ordered photos, straight from the gallery frontmatter. */
-  photos: { src: ImageMetadata; alt: string }[];
+  photos: { src: ImageMetadata; alt: string; title?: string }[];
 }
 
 const { photos } = Astro.props;
@@ -37,6 +37,7 @@ const tiles = await Promise.all(
           href={full.src}
           data-pswp-width={width}
           data-pswp-height={height}
+          title={photo.title}
           class="group block overflow-hidden bg-line"
           style={`aspect-ratio: ${photo.src.width} / ${photo.src.height}`}
         >

@@ -130,8 +130,9 @@ galleries. Short version:
 - Frontmatter is validated by the strict Zod schema in `src/content.config.ts`;
   a missing or mistyped field fails `pnpm build` with a pointed error. Required:
   `title`, `description`, `date` (`YYYY-MM-DD`), `cover` (path relative to the
-  md file), `photos` (`{ src, alt }` list, array order = display order, `alt`
-  non-empty). Optional: `location`, `tags`, `featured` (home page), `draft`
+  md file), `photos` (`{ src, alt, title? }` list, array order = display order,
+  `alt` required and non-empty, `title` optional link tooltip). Optional:
+  `location`, `tags`, `featured` (home page), `draft`
   (hidden in prod, visible in `pnpm dev`), `order`, `slug`.
 - **No manual image resizing or compression.** `astro:assets` (`sharp`)
   generates the served derivatives at build time. Commit one source JPEG per

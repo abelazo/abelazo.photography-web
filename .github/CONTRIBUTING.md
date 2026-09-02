@@ -124,6 +124,17 @@ Write it for someone who cannot see the photo:
 Good: `A dark tide line curving across pale wet sand at dawn.`
 Weak: `Beach photo` · `IMG_4021` · `Coastal Mornings`
 
+A missing or empty `alt:` **fails `pnpm build`** with an error that names the
+offending photo by its index in the list and the `alt` field. This is enforced,
+not advisory.
+
+### Photo title
+
+`title:` on a `photos:` entry is **optional**. When set it becomes the link's
+tooltip in the grid (`<a title="…">`) — a short human label, not a second
+description. A few words: `Tide line, first light`. Leave it off and nothing is
+lost. It must not be an empty string if the key is present.
+
 ## Frontmatter reference
 
 The schema in `src/content.config.ts` is **strict**: every field below is
@@ -137,7 +148,8 @@ date: 2026-02-14 # required — capture date, YYYY-MM-DD
 cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg # required — path relative to this file
 photos: # required — at least one; array order is display order
   - src: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
-    alt: A dark tide line curving across pale wet sand at dawn.
+    alt: A dark tide line curving across pale wet sand at dawn. # required
+    title: Tide line, first light # optional — link tooltip
   - src: ../../assets/galleries/coastal-mornings/02-low-cloud.jpg
     alt: Low grey cloud pressing down over a flat, calm sea.
 
@@ -155,19 +167,19 @@ Optional prose body. Markdown. Shown on the gallery page above the photos. Leave
 it out if you have nothing to say.
 ```
 
-| Field         | Required | Type              | Notes                                                              |
-| :------------ | :------: | :---------------- | :----------------------------------------------------------------- |
-| `title`       |   yes    | string            | Headings and nav.                                                  |
-| `description` |   yes    | string            | 1–2 sentences; reused as the meta description.                     |
-| `date`        |   yes    | `YYYY-MM-DD`      | Capture date.                                                      |
-| `cover`       |   yes    | image path        | Relative to the markdown file.                                     |
-| `photos`      |   yes    | list              | `{ src, alt }` each; array order is display order; `alt` required. |
-| `location`    |    no    | string            | Shown on the detail page when set.                                 |
-| `tags`        |    no    | list of strings   | Shown on the detail page when non-empty.                           |
-| `featured`    |    no    | boolean (`false`) | `true` → also appears on the home page.                            |
-| `draft`       |    no    | boolean (`false`) | `true` → hidden from the built site, visible in `pnpm dev`.        |
-| `order`       |    no    | integer (`0`)     | Ascending sort key; ties break by `date`, newest first.            |
-| `slug`        |    no    | string            | URL slug; defaults to the file name.                               |
+| Field         | Required | Type              | Notes                                                                                        |
+| :------------ | :------: | :---------------- | :------------------------------------------------------------------------------------------- |
+| `title`       |   yes    | string            | Headings and nav.                                                                            |
+| `description` |   yes    | string            | 1–2 sentences; reused as the meta description.                                               |
+| `date`        |   yes    | `YYYY-MM-DD`      | Capture date.                                                                                |
+| `cover`       |   yes    | image path        | Relative to the markdown file.                                                               |
+| `photos`      |   yes    | list              | `{ src, alt, title? }` each; array order is display order; `alt` required, `title` optional. |
+| `location`    |    no    | string            | Shown on the detail page when set.                                                           |
+| `tags`        |    no    | list of strings   | Shown on the detail page when non-empty.                                                     |
+| `featured`    |    no    | boolean (`false`) | `true` → also appears on the home page.                                                      |
+| `draft`       |    no    | boolean (`false`) | `true` → hidden from the built site, visible in `pnpm dev`.                                  |
+| `order`       |    no    | integer (`0`)     | Ascending sort key; ties break by `date`, newest first.                                      |
+| `slug`        |    no    | string            | URL slug; defaults to the file name.                                                         |
 
 ### Drafts
 

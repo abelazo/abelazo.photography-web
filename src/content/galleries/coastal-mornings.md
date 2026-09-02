@@ -13,8 +13,10 @@ cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
 photos:
   - src: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
     alt: A dark tide line curving across pale wet sand at dawn.
+    title: Tide line, first light
   - src: ../../assets/galleries/coastal-mornings/02-low-cloud.jpg
     alt: Low grey cloud pressing down over a flat, calm sea.
+    title: Low cloud over slack water
   - src: ../../assets/galleries/coastal-mornings/03-wet-sand.jpg
     alt: Ripples in wet sand catching soft overcast light.
   - src: ../../assets/galleries/coastal-mornings/04-first-light.jpg

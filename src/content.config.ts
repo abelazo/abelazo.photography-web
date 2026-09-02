@@ -43,15 +43,33 @@ export function galleriesSchema({ image }: SchemaContext) {
       draft: z.boolean().default(false),
       /** Manual sort key, ascending. Ties fall back to `date`, newest first. */
       order: z.number().int().nonnegative().default(0),
-      /** Ordered photos. Array order is display order. */
+      /**
+       * Ordered photos. The array order *is* the display order — explicit in
+       * this file, never read off the filesystem. Reorder the list to reorder
+       * the gallery.
+       */
       photos: z
         .array(
-          z.object({
-            /** Path to the image file, relative to this markdown file. */
-            src: image(),
-            /** Required — no decorative photos in a photography portfolio. */
-            alt: z.string().min(1, 'every photo needs alt text'),
-          }),
+          z
+            .object({
+              /** Path to the image file, relative to this markdown file. */
+              src: image(),
+              /**
+               * Required. No decorative photos in a photography portfolio —
+               * the build fails on a missing or empty `alt`, naming the photo.
+               */
+              alt: z
+                .string({
+                  error: 'photo `alt` is required — add a one-sentence description of the frame',
+                })
+                .min(1, 'photo `alt` is empty — add a one-sentence description of the frame'),
+              /** Optional short title/caption. Rendered as the link tooltip. */
+              title: z
+                .string()
+                .min(1, 'photo `title` is set but empty — remove it or fill it in')
+                .optional(),
+            })
+            .strict(),
         )
         .min(1, 'a gallery needs at least one photo'),
     })

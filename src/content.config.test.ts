@@ -71,6 +71,59 @@ describe('galleriesSchema', () => {
     expect(schema.safeParse({ ...valid, photos: [{ src: 'a.jpg', alt: '' }] }).success).toBe(false);
   });
 
+  it('fails an empty alt with an actionable, photo-scoped message', () => {
+    const result = schema.safeParse({ ...valid, photos: [{ src: 'a.jpg', alt: '' }] });
+    expect(result.success).toBe(false);
+    const issue = result.error!.issues[0];
+    expect(issue.path).toEqual(['photos', 0, 'alt']);
+    expect(issue.message).toMatch(/one-sentence description/);
+  });
+
+  it('fails a missing alt with an actionable, photo-scoped message', () => {
+    const result = schema.safeParse({ ...valid, photos: [{ src: 'a.jpg' }] });
+    expect(result.success).toBe(false);
+    const issue = result.error!.issues[0];
+    expect(issue.path).toEqual(['photos', 0, 'alt']);
+    expect(issue.message).toMatch(/one-sentence description/);
+  });
+
+  it('preserves the photos list order as given', () => {
+    const photos = [
+      { src: '1.jpg', alt: 'first' },
+      { src: '2.jpg', alt: 'second' },
+      { src: '3.jpg', alt: 'third' },
+    ];
+    expect(schema.parse({ ...valid, photos }).photos.map((p) => p.alt)).toEqual([
+      'first',
+      'second',
+      'third',
+    ]);
+  });
+
+  it('accepts an optional per-photo title and omits it when absent', () => {
+    const result = schema.parse({
+      ...valid,
+      photos: [
+        { src: 'a.jpg', alt: 'A dark tide line.', title: 'Tide line' },
+        { src: 'b.jpg', alt: 'Low cloud over the sea.' },
+      ],
+    });
+    expect(result.photos[0].title).toBe('Tide line');
+    expect(result.photos[1].title).toBeUndefined();
+  });
+
+  it('rejects a blank per-photo title', () => {
+    expect(
+      schema.safeParse({ ...valid, photos: [{ src: 'a.jpg', alt: 'ok', title: '' }] }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an unknown per-photo field', () => {
+    expect(
+      schema.safeParse({ ...valid, photos: [{ src: 'a.jpg', alt: 'ok', caption: 'x' }] }).success,
+    ).toBe(false);
+  });
+
   it('rejects a non-kebab-case slug override', () => {
     expect(schema.safeParse({ ...valid, slug: 'Coastal Mornings' }).success).toBe(false);
   });
