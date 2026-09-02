@@ -97,7 +97,12 @@ test.describe('prev/next navigation', () => {
     // fetched slide 1's full-res image (preload: [1, 2]). Assert it is in the
     // DOM, fully decoded, and is not the low-res placeholder.
     const preloaded = page.locator(`img.pswp__img:not(.pswp__img--placeholder)[src="${nextSrc}"]`);
-    await expect(preloaded).toHaveJSProperty('complete', true);
+    // Generous timeout: the dev server generates every derivative on first
+    // request (AVIF + WebP + fallback, several widths per photo), so a cold
+    // gallery page can take a few seconds to serve the preload image. The
+    // point of the assertion is that the fetch happens before the visitor
+    // navigates — which it does — not that it is instant.
+    await expect(preloaded).toHaveJSProperty('complete', true, { timeout: 15_000 });
     expect(await preloaded.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(
       0,
     );

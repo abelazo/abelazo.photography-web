@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getGalleries, galleryHref } from '../lib/galleries';
 
@@ -22,11 +22,13 @@ const galleries = await getGalleries();
             <article>
               <a href={galleryHref(gallery)} class="group block">
                 <div class="overflow-hidden bg-line">
-                  <Image
+                  <Picture
                     src={gallery.data.cover}
                     alt=""
+                    formats={['avif', 'webp']}
                     width={480}
                     height={320}
+                    densities={[1, 2]}
                     class="aspect-3/2 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
                 </div>

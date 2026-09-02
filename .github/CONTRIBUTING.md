@@ -71,11 +71,13 @@ match.
 
 **You do not resize or compress anything for display.** Gallery photos are
 optimised at build time by `astro:assets` (backed by `sharp`): from each source
-file the build generates resized, modern-format (`webp`) derivatives and serves
-those — a small thumbnail in the grid, a larger rendition for the fullscreen
-viewer. The `<Image />` component picks the right one per layout and screen.
-Commit the photo; the build does the rest. No step in the publish flow requires
-Photoshop, an export preset, or a "web" size.
+file the build generates resized derivatives in modern formats — `AVIF` and
+`WebP`, with a JPEG fallback — and serves those via a `<picture>` element, so
+each browser downloads the smallest format it supports. The grid gets a
+responsive `srcset` (the browser picks the width for its layout and screen); the
+fullscreen viewer gets a single larger `WebP` rendition. Commit the photo; the
+build does the rest. No step in the publish flow requires Photoshop, an export
+preset, or a "web" size.
 
 The one real constraint is **git**: every source file you commit lives in the
 repository forever and ships in every clone and every deploy. So the source
