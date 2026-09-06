@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.10.0...v1.11.0) (2026-09-06)
+
+### Features
+
+* First version of i18n ([77c313e](https://github.com/abelazo/abelazo.photography-web/commit/77c313e6260bf7651944b438d9ad85bcee1b886c))
+
 ## [1.10.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.9.1...v1.10.0) (2026-09-02)
 
 ### Features
