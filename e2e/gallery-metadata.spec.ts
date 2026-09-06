@@ -1,32 +1,27 @@
 import { test, expect } from '@playwright/test';
+import {
+  BARE_GALLERY_PATH,
+  BARE_GALLERY_TITLE,
+  TEST_GALLERY_PATH,
+  TEST_GALLERY_TITLE,
+} from './support';
 
 // User story #10 — [2.4] Gallery detail page metadata.
 // Acceptance criteria, mapped one-to-one to the tests below.
 //
-// Sample content: `coastal-mornings` carries location + tags, `harbour-lights`
-// carries neither — so both the "present" and "absent" paths are covered.
-
-/** Open the detail page whose <h1> matches `title`. */
-async function openGallery(page: import('@playwright/test').Page, title: string) {
-  await page.goto('/');
-  await page
-    .locator('main article')
-    .filter({ has: page.getByRole('heading', { level: 2, name: title }) })
-    .getByRole('link')
-    .click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
-}
+// Fixtures: `test-gallery` carries location + tags; `test-gallery-bare` carries
+// neither — so both the "present" and "absent" paths are covered.
 
 test.describe('gallery detail page metadata', () => {
   test('title and description render above the grid, not overlapping the images', async ({
     page,
   }) => {
-    await openGallery(page, 'Coastal Mornings');
+    await page.goto(TEST_GALLERY_PATH);
 
     const heading = page.getByRole('heading', { level: 1 });
     const description = page.locator('main section p.text-lg');
-    await expect(heading).toBeVisible();
-    await expect(description).toHaveText(/first light along a cold shoreline/i);
+    await expect(heading).toHaveText(TEST_GALLERY_TITLE);
+    await expect(description).toHaveText(/suite de tests E2E/i);
 
     // The metadata block sits entirely above the thumbnail grid.
     const meta = await page.locator('main section').boundingBox();
@@ -37,24 +32,25 @@ test.describe('gallery detail page metadata', () => {
   });
 
   test('optional fields render only when present in frontmatter', async ({ page }) => {
-    // Present: coastal-mornings has a location and three tags.
-    await openGallery(page, 'Coastal Mornings');
+    // Present: test-gallery has a location and three tags.
+    await page.goto(TEST_GALLERY_PATH);
     const meta = page.locator('main section dl');
-    await expect(meta).toContainText('Northumberland coast');
-    await expect(meta.locator('li')).toHaveText(['landscape', 'coastal', 'dawn']);
+    await expect(meta).toContainText('Estudio, Tres Cantos');
+    await expect(meta.locator('li')).toHaveText(['prueba', 'e2e', 'fixture']);
     // Date always shows.
-    await expect(meta.locator('time')).toHaveAttribute('datetime', '2026-02-14');
+    await expect(meta.locator('time')).toHaveAttribute('datetime', '2020-06-15');
 
-    // Absent: harbour-lights has neither — only the date line renders.
-    await openGallery(page, 'Harbour Lights');
+    // Absent: test-gallery-bare has neither — only the date line renders.
+    await page.goto(BARE_GALLERY_PATH);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(BARE_GALLERY_TITLE);
     const bare = page.locator('main section dl');
-    await expect(bare.locator('time')).toHaveAttribute('datetime', '2026-05-30');
+    await expect(bare.locator('time')).toHaveAttribute('datetime', '2019-03-04');
     await expect(bare.locator('li')).toHaveCount(0);
-    await expect(bare).not.toContainText('Northumberland');
+    await expect(bare).not.toContainText('Estudio, Tres Cantos');
   });
 
   test('metadata stays visually subordinate to the photos', async ({ page }) => {
-    await openGallery(page, 'Coastal Mornings');
+    await page.goto(TEST_GALLERY_PATH);
 
     const size = (loc: import('@playwright/test').Locator) =>
       loc.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));

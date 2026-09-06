@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
  *
  * Acceptance criteria, from a crawler's point of view:
  *  1. `sitemap.xml` auto-generated at build time and includes all published
- *     galleries.
+ *     galleries and static pages, in both locales.
  *  2. `robots.txt` present, allows crawling, references the sitemap.
  *  3. Draft / unpublished galleries excluded from the sitemap.
  *
@@ -14,11 +14,12 @@ import { test, expect } from '@playwright/test';
  * (see `playwright.config.ts`), which serve a real production build via
  * `astro preview`.
  *
- * Criterion 3 has no draft in the sample content to point at. The mechanism —
- * a `draft: true` gallery gets no built page, so nothing for the sitemap to
- * pick up — is unit-tested in `src/lib/galleries.test.ts` (`isListed`). Here we
- * assert the observable invariant instead: the galleries in the sitemap are
- * exactly the galleries a visitor can reach from the home page, no more.
+ * Every sample gallery currently ships `draft: true`, so a production build has
+ * no gallery-detail pages at all — which is exactly criterion 3's mechanism in
+ * action (a draft gets no built page, so nothing for the sitemap to pick up).
+ * The observable invariant asserted here: the gallery-detail URLs in the
+ * sitemap are exactly the ones a visitor can reach from the home page — today,
+ * none.
  */
 
 const SITE = 'https://abelazo.photography';
@@ -27,6 +28,9 @@ const SITE = 'https://abelazo.photography';
 function locs(xml: string): string[] {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 }
+
+/** A gallery-*detail* URL: `/galleries/<slug>/`, not the `/galleries/` index. */
+const GALLERY_DETAIL = /\/galleries\/[^/]+\/$/;
 
 test.describe('sitemap and robots', () => {
   test('sitemap is generated and lists the site pages', async ({ request }) => {
@@ -48,33 +52,35 @@ test.describe('sitemap and robots', () => {
       urls.push(...locs(await res.text()));
     }
 
+    // Home + static pages, both locales (URL segments are English in both).
     expect(urls).toContain(`${SITE}/`);
-    // Static pages are in.
-    expect(urls).toContain(`${SITE}/about/`);
+    expect(urls).toContain(`${SITE}/the-session/`);
     expect(urls).toContain(`${SITE}/contact/`);
+    expect(urls).toContain(`${SITE}/galleries/`);
+    expect(urls).toContain(`${SITE}/en/`);
+    expect(urls).toContain(`${SITE}/en/the-session/`);
     // Every entry is an absolute URL on the configured site.
     for (const url of urls) expect(url.startsWith(`${SITE}/`)).toBe(true);
   });
 
-  test('sitemap galleries match exactly the published galleries', async ({ request, page }) => {
+  test('sitemap gallery pages match exactly the reachable galleries', async ({ request, page }) => {
     // What a visitor can reach: the gallery cards on the home page.
     await page.goto('/');
     const onSite = new Set(
       (
         await page
-          .locator('main article a')
+          .locator('#galleries ul li a')
           .evaluateAll((links) => links.map((a) => (a as HTMLAnchorElement).getAttribute('href')))
       ).map((href) => `${SITE}${href!.replace(/\/?$/, '/')}`),
     );
-    expect(onSite.size).toBeGreaterThan(0);
 
-    // What the sitemap advertises under /galleries/.
+    // What the sitemap advertises as a gallery-detail page.
     const index = await request.get('/sitemap-index.xml');
     const inSitemap = new Set<string>();
     for (const child of locs(await index.text())) {
       const res = await request.get(child.replace(SITE, ''));
       for (const url of locs(await res.text())) {
-        if (url.includes('/galleries/')) inSitemap.add(url);
+        if (GALLERY_DETAIL.test(url)) inSitemap.add(url);
       }
     }
 

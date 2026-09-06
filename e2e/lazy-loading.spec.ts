@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { openTestGallery } from './support';
 
 // User story #23 — Lazy loading.
 //   As a visitor on any connection speed, I want offscreen images to load only
@@ -41,16 +42,9 @@ async function readCls(page: Page): Promise<number> {
   return page.evaluate(() => (window as unknown as { __cls: number }).__cls);
 }
 
-async function openFirstGallery(page: Page) {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-  await expect(page.locator('.gallery-grid li a').first()).toBeVisible();
-}
-
 test.describe('lazy loading (#23)', () => {
   test('grid thumbnails below the fold use native lazy loading', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
 
     const images = page.locator('.gallery-grid li img');
     const count = await images.count();
@@ -69,20 +63,20 @@ test.describe('lazy loading (#23)', () => {
   test('above-the-fold images load eagerly, not lazy', async ({ page }) => {
     // Home page: the first card cover is the largest paint above the fold.
     await page.goto('/');
-    await expect(page.locator('main article img').first()).toHaveAttribute('loading', 'eager');
+    await expect(page.locator('#galleries ul li img').first()).toHaveAttribute('loading', 'eager');
 
     // Gallery detail page: the first grid row leads the page and loads eagerly.
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await expect(page.locator('.gallery-grid li img').first()).toHaveAttribute('loading', 'eager');
   });
 
   test('no layout shift as lazy images load in — home page', async ({ page }) => {
     await startCls(page);
     await page.goto('/');
-    await expect(page.locator('main article img').first()).toBeVisible();
+    await expect(page.locator('#galleries ul li img').first()).toBeVisible();
 
     // Every cover reserves its box via intrinsic width/height before it loads.
-    for (const img of await page.locator('main article img').all()) {
+    for (const img of await page.locator('#galleries ul li img').all()) {
       await expect(img).toHaveAttribute('width', /^\d+$/);
       await expect(img).toHaveAttribute('height', /^\d+$/);
     }
@@ -93,7 +87,7 @@ test.describe('lazy loading (#23)', () => {
 
   test('no layout shift as lazy images load in — gallery detail page', async ({ page }) => {
     await startCls(page);
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await expect(page.locator('.gallery-grid li a').first()).toBeVisible();
 
     // Each tile reserves space via an aspect-ratio box before its image loads.

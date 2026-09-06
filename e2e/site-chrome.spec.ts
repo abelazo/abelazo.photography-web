@@ -4,15 +4,17 @@ test.describe('site chrome', () => {
   test('header exposes the wordmark and primary nav', async ({ page }) => {
     await page.goto('/');
     const header = page.getByRole('banner');
-    await expect(header.getByRole('link', { name: 'Abelazo' })).toBeVisible();
+    await expect(header.getByRole('link', { name: 'Abelazo Photography' })).toBeVisible();
     await expect(
-      header.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Galleries' }),
+      header.getByRole('navigation', { name: 'Principal' }).getByRole('link', { name: 'Galerías' }),
     ).toBeVisible();
   });
 
-  test('footer shows the attribution', async ({ page }) => {
+  test('footer shows the attribution and the contact email', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('contentinfo')).toContainText('Abel Guillen');
+    const footer = page.getByRole('contentinfo');
+    await expect(footer).toContainText('Abelazo Photography');
+    await expect(footer.locator('a[href^="mailto:"]')).toBeVisible();
   });
 
   test('the page sits on a light background', async ({ page }) => {

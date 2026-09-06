@@ -1,4 +1,5 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import { openTestGallery } from './support';
 
 // User story #27 — [5.5] Responsive/mobile behavior audit.
 //   As a visitor on a mobile device, I want the entire site — not just the
@@ -8,24 +9,14 @@ import { test, expect, type Page, type Locator } from '@playwright/test';
 //   1. No horizontal scroll on any page at common mobile widths (320–414px).
 //   2. Tap targets meet a minimum size (~44×44px).
 //   3. Text stays legible without zoom; images don't overflow their containers.
-//
-// Tablet/desktop breakpoint + column-count assertions are a separate story
-// (#35) — this spec stays inside the 320–414px mobile band.
 
 const MOBILE_WIDTHS = [320, 375, 414];
 const MIN_TAP = 44;
 
-/** The static routes. The gallery detail route is reached by click instead —
- *  its slug is content-dependent (see `gotoFirstGallery`). */
-const STATIC_PATHS = ['/', '/about', '/contact'];
+/** The static routes. The gallery detail route is the fixture gallery. */
+const STATIC_PATHS = ['/', '/the-session', '/contact'];
 
-const NAV_LINKS = ['Galleries', 'About', 'Contact'] as const;
-
-async function gotoFirstGallery(page: Page): Promise<void> {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-}
+const NAV_LINKS = ['La sesión', 'Galerías', 'Contacto'] as const;
 
 /** Walk the viewport down the page so any lazy-loaded content that could widen
  *  the layout has loaded before we measure. */
@@ -41,8 +32,8 @@ async function scrollThrough(page: Page): Promise<void> {
 
 /** Widest horizontal overflow on the page, in CSS px. `> 1` means a real
  *  sideways scroll (1px cushion absorbs sub-pixel rounding). Compared against
- *  `innerWidth`, not `clientWidth`, so the reserved scrollbar gutter
- *  (`scrollbar-gutter: stable` in global.css) is not counted as overflow. */
+ *  `innerWidth`, not `clientWidth`, so the reserved scrollbar gutter is not
+ *  counted as overflow. */
 async function horizontalOverflow(page: Page): Promise<number> {
   return page.evaluate(() => {
     const w = window.innerWidth;
@@ -65,7 +56,7 @@ test.describe('responsive / mobile behaviour', () => {
         });
 
         test('the gallery detail page does not scroll sideways', async ({ page }) => {
-          await gotoFirstGallery(page);
+          await openTestGallery(page);
           await scrollThrough(page);
           expect(await horizontalOverflow(page), `gallery detail @ ${width}px`).toBeLessThanOrEqual(
             1,
@@ -89,14 +80,14 @@ test.describe('responsive / mobile behaviour', () => {
     test('the header wordmark and hamburger toggle', async ({ page }) => {
       await page.goto('/');
       const header = page.getByRole('banner');
-      await expectHittable(header.getByRole('link', { name: 'Abelazo' }), 'wordmark');
-      await expectHittable(header.getByRole('button', { name: 'Menu' }), 'hamburger toggle');
+      await expectHittable(header.getByRole('link', { name: 'Abelazo Photography' }), 'wordmark');
+      await expectHittable(header.getByRole('button', { name: 'Menú' }), 'hamburger toggle');
     });
 
     test('every link in the open mobile menu', async ({ page }) => {
       await page.goto('/');
-      await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
-      const nav = page.getByRole('navigation', { name: 'Primary' });
+      await page.getByRole('banner').getByRole('button', { name: 'Menú' }).click();
+      const nav = page.getByRole('navigation', { name: 'Principal' });
       for (const label of NAV_LINKS) {
         await expectHittable(
           nav.getByRole('link', { name: label, exact: true }),
@@ -107,13 +98,16 @@ test.describe('responsive / mobile behaviour', () => {
 
     test('the home-page gallery card link', async ({ page }) => {
       await page.goto('/');
-      await expectHittable(page.locator('main article').first().getByRole('link'), 'gallery card');
+      await expectHittable(
+        page.locator('#galleries ul li').first().getByRole('link'),
+        'gallery card',
+      );
     });
 
     test('the back link and grid tiles on a gallery detail page', async ({ page }) => {
-      await gotoFirstGallery(page);
+      await openTestGallery(page);
       await expectHittable(
-        page.getByRole('main').getByRole('link', { name: /Galleries/ }),
+        page.getByRole('main').getByRole('link', { name: /Galerías/ }),
         'back link',
       );
       await expectHittable(page.locator('.gallery-grid li a').first(), 'first grid tile');
@@ -145,7 +139,7 @@ test.describe('responsive / mobile behaviour', () => {
         });
 
         test('images never overflow their container', async ({ page }) => {
-          await gotoFirstGallery(page);
+          await openTestGallery(page);
           await scrollThrough(page);
           const spills = await page.locator('main img').evaluateAll(
             (imgs, w) =>

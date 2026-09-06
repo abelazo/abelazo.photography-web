@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Locator, Page } from '@playwright/test';
+import { currentImage, currentZoomWrap, openLightbox, openTestGallery } from './support';
 
 // User story #16 — [3.6] Zoom.
 // Acceptance criteria, mapped one-to-one to the tests below:
@@ -11,40 +11,13 @@ import type { Locator, Page } from '@playwright/test';
 // Zoom levels are pinned in GalleryGrid.astro (`initialZoomLevel: 'fit'`,
 // `secondaryZoomLevel: 'fill'`), so every photo has real zoom headroom and the
 // `.pswp--zoomed-in` / `.pswp--zoom-allowed` state on `.pswp` is meaningful.
-// `coastal-mornings` (the first gallery) ends with `09-sea-fret.jpg`, a
-// 3200×2133 fixture added so desktop zoom has genuine detail to pan around.
-
-/** Open the first gallery detail page from the homepage, script bound. */
-async function openFirstGallery(page: Page) {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-  await expect(page.locator('.gallery-grid')).toHaveAttribute('data-pswp-ready', '');
-}
-
-/** Click a thumbnail and wait for PhotoSwipe to finish its open animation
- *  (it ignores input until then). */
-async function openLightbox(page: Page, thumb: Locator) {
-  await thumb.click();
-  await expect(page.locator('.pswp')).toHaveClass(/pswp--ui-visible/);
-  await expect(page.locator('.pswp__img:not(.pswp__img--placeholder)').first()).toBeVisible();
-}
-
-/** The image shown on the currently-active slide. */
-function currentImage(page: Page) {
-  return page.locator(
-    '.pswp__item:not([aria-hidden="true"]) img.pswp__img:not(.pswp__img--placeholder)',
-  );
-}
-
-/** The zoom/pan transform wrapper of the currently-active slide. */
-function currentZoomWrap(page: Page) {
-  return page.locator('.pswp__item:not([aria-hidden="true"]) .pswp__zoom-wrap');
-}
+// The fixture gallery's last frame (`09-frame.jpg`) is a 2560×1707 source —
+// GalleryGrid caps the rendition at 2400px wide — so desktop zoom has genuine
+// detail to pan around.
 
 test.describe('zoom', () => {
   test('the zoom button is present and toggles zoom', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const pswp = page.locator('.pswp');
@@ -64,7 +37,7 @@ test.describe('zoom', () => {
   });
 
   test('clicking and double-clicking the image toggle zoom (desktop)', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const pswp = page.locator('.pswp');
@@ -80,7 +53,7 @@ test.describe('zoom', () => {
   });
 
   test('the zoomed image pans via drag', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const pswp = page.locator('.pswp');
@@ -108,7 +81,7 @@ test.describe('zoom', () => {
   });
 
   test('zoom resets when navigating to the next / prev photo', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const pswp = page.locator('.pswp');
@@ -132,10 +105,10 @@ test.describe('zoom', () => {
   test('the high-resolution fixture gives desktop zoom real detail and pan headroom', async ({
     page,
   }) => {
-    await openFirstGallery(page); // coastal-mornings (order 1)
+    await openTestGallery(page);
 
-    // Last photo is `09-sea-fret.jpg` — a 3200×2133 fixture added specifically so
-    // desktop zoom has something to zoom into (the other fixtures are 1200×800).
+    // The last frame (`09-frame.jpg`) is a 2560×1707 source — added specifically
+    // so desktop zoom has something to zoom into.
     const thumb = page.locator('.gallery-grid li a').last();
     await openLightbox(page, thumb);
 
@@ -177,7 +150,7 @@ test.describe('zoom (mobile)', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
 
   test('double-tap toggles zoom', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const pswp = page.locator('.pswp');

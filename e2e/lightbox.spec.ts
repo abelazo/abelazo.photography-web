@@ -1,37 +1,12 @@
 import { test, expect } from '@playwright/test';
-import type { Locator, Page } from '@playwright/test';
+import { currentImage, openLightbox, openTestGallery } from './support';
 
 // User story #11 — [3.1] Open/close lightbox.
 // Acceptance criteria, mapped one-to-one to the tests below.
 
-/** Open the first gallery detail page from the homepage. */
-async function openFirstGallery(page: Page) {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-  // Wait for the lightbox script to bind before interacting — until then the
-  // anchors just navigate to the image.
-  await expect(page.locator('.gallery-grid')).toHaveAttribute('data-pswp-ready', '');
-}
-
-/** Click a thumbnail and wait for PhotoSwipe to finish its open animation
- *  (it ignores close input until then). */
-async function openLightbox(page: Page, thumb: Locator) {
-  await thumb.click();
-  await expect(page.locator('.pswp')).toHaveClass(/pswp--ui-visible/);
-  await expect(page.locator('.pswp__img:not(.pswp__img--placeholder)').first()).toBeVisible();
-}
-
-/** The image shown on the currently-active slide. */
-function currentImage(page: Page) {
-  return page.locator(
-    '.pswp__item:not([aria-hidden="true"]) img.pswp__img:not(.pswp__img--placeholder)',
-  );
-}
-
 test.describe('fullscreen lightbox', () => {
   test('clicking a thumbnail opens PhotoSwipe at that image', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
 
     const secondThumb = page.locator('.gallery-grid li a').nth(1);
     const expectedSrc = new URL((await secondThumb.getAttribute('href')) as string, page.url())
@@ -42,7 +17,7 @@ test.describe('fullscreen lightbox', () => {
   });
 
   test('closes via the close button, Esc, and clicking outside the image', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     const thumb = page.locator('.gallery-grid li a').first();
     const pswp = page.locator('.pswp');
 
@@ -63,7 +38,7 @@ test.describe('fullscreen lightbox', () => {
   });
 
   test('locks background page scroll while open', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
 
     const rootOverflow = () =>
       page.evaluate(() => getComputedStyle(document.documentElement).overflow);
@@ -79,7 +54,7 @@ test.describe('fullscreen lightbox', () => {
   });
 
   test('closing returns focus to the thumbnail that opened it', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     const thumb = page.locator('.gallery-grid li a').nth(2);
 
     await openLightbox(page, thumb);

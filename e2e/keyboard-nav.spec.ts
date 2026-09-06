@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { currentImage, fullSrcForThumb, openLightbox, openTestGallery } from './support';
 
 // User story #17 — [3.7] Keyboard navigation.
 // Acceptance criteria, mapped one-to-one to the tests below:
@@ -15,38 +16,6 @@ import type { Locator, Page } from '@playwright/test';
 // on the page. GalleryGrid.astro closes those gaps: `inert` on the rest of the
 // page, a Tab-wrapping handler, a focus hand-back on close, and a light
 // `:focus-visible` ring that stays visible over PhotoSwipe's dark chrome.
-// Arrow-key and Esc behaviour is also covered from the navigation/open-close
-// angle in prev-next.spec.ts and lightbox.spec.ts — here they are re-asserted
-// purely as keyboard affordances.
-
-/** Open the first gallery detail page from the homepage, script bound. */
-async function openFirstGallery(page: Page) {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-  await expect(page.locator('.gallery-grid')).toHaveAttribute('data-pswp-ready', '');
-}
-
-/** Click a thumbnail and wait for PhotoSwipe to finish its open animation
- *  (it ignores input until then). */
-async function openLightbox(page: Page, thumb: Locator) {
-  await thumb.click();
-  await expect(page.locator('.pswp')).toHaveClass(/pswp--ui-visible/);
-  await expect(page.locator('.pswp__img:not(.pswp__img--placeholder)').first()).toBeVisible();
-}
-
-/** The image shown on the currently-active slide. */
-function currentImage(page: Page) {
-  return page.locator(
-    '.pswp__item:not([aria-hidden="true"]) img.pswp__img:not(.pswp__img--placeholder)',
-  );
-}
-
-/** Absolute src the viewer will use for the thumbnail at `index`. */
-async function fullSrcForThumb(page: Page, index: number) {
-  const href = (await page.locator('.gallery-grid li a').nth(index).getAttribute('href')) as string;
-  return new URL(href, page.url()).href;
-}
 
 /** macOS Playwright WebKit follows the system "Full Keyboard Access" setting —
  *  Tab does not move focus to links/buttons, which Playwright cannot toggle. The
@@ -78,7 +47,7 @@ function activeDescriptor(page: Page) {
 
 test.describe('keyboard navigation', () => {
   test('Arrow keys move between photos, Esc closes', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     await page.keyboard.press('ArrowRight');
@@ -99,7 +68,7 @@ test.describe('keyboard navigation', () => {
     browserName,
   }) => {
     skipMacWebKit(browserName);
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     // Walk a full lap of the focusable controls. Every stop must be inside the
@@ -133,7 +102,7 @@ test.describe('keyboard navigation', () => {
   });
 
   test('Shift+Tab is also trapped inside the lightbox', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     for (let i = 0; i < 6; i++) {
@@ -145,7 +114,7 @@ test.describe('keyboard navigation', () => {
   });
 
   test('the page behind the lightbox is inert to keyboard focus', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     // The primary nav sits in the page chrome behind the overlay. However far
@@ -160,7 +129,7 @@ test.describe('keyboard navigation', () => {
   });
 
   test('closing with Esc returns focus to the thumbnail that opened it', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     const thumb = page.locator('.gallery-grid li a').nth(2);
 
     await openLightbox(page, thumb);
@@ -174,7 +143,7 @@ test.describe('keyboard navigation', () => {
   });
 
   test('every PhotoSwipe control exposes an accessible label', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     for (const sel of [
@@ -193,7 +162,7 @@ test.describe('keyboard navigation', () => {
     browserName,
   }) => {
     skipMacWebKit(browserName);
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     // Tab until a real PhotoSwipe button takes focus, then inspect its outline.

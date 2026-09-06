@@ -1,19 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { openTestGallery, TEST_GALLERY_PHOTO_COUNT } from './support';
 
 test.describe('gallery detail page', () => {
   test('renders a thumbnail grid with one linked, described image per photo', async ({ page }) => {
-    await page.goto('/');
-    const firstCard = page.locator('main article').first();
-    const photoCount = Number(
-      (await firstCard.locator('p', { hasText: /photos/ }).textContent())?.match(/\d+/)?.[0],
-    );
-    expect(photoCount).toBeGreaterThan(0);
-
-    await firstCard.getByRole('link').click();
-    await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
+    await openTestGallery(page);
 
     const thumbs = page.locator('.gallery-grid li');
-    await expect(thumbs).toHaveCount(photoCount);
+    await expect(thumbs).toHaveCount(TEST_GALLERY_PHOTO_COUNT);
 
     for (const thumb of await thumbs.all()) {
       const link = thumb.getByRole('link');
@@ -26,8 +19,7 @@ test.describe('gallery detail page', () => {
   });
 
   test('thumbnails reserve aspect-ratio space and lazy-load below the fold', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('main article').first().getByRole('link').click();
+    await openTestGallery(page);
 
     const links = page.locator('.gallery-grid li a');
     await expect(links.first()).toHaveAttribute('style', /aspect-ratio/);
@@ -38,8 +30,7 @@ test.describe('gallery detail page', () => {
   });
 
   test('the grid leads the page — no cover hero above it', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('main article').first().getByRole('link').click();
+    await openTestGallery(page);
     await expect(page.locator('.gallery-grid li a').first()).toBeVisible();
 
     // Every image on the detail page belongs to the thumbnail grid; there is no
@@ -51,8 +42,7 @@ test.describe('gallery detail page', () => {
   });
 
   test('portrait and landscape frames sit together, uncropped', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('main article').first().getByRole('link').click();
+    await openTestGallery(page);
 
     const tiles = page.locator('.gallery-grid li a');
     await expect(tiles.first()).toBeVisible();

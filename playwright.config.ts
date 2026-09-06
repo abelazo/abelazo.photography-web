@@ -39,6 +39,11 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    // Pin the browser locale so BaseLayout's first-visit `Accept-Language`
+    // redirect (see the inline script there) resolves to Spanish and leaves
+    // the visitor on the default, unprefixed pages. Tests that exercise the
+    // English mirror set a `lang=en` cookie explicitly (see e2e/i18n.spec.ts).
+    locale: 'es-ES',
   },
   projects: [
     ...BROWSERS.map(({ name, device }) => ({

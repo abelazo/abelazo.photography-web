@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Locator, Page } from '@playwright/test';
+import { currentImage, fullSrcForThumb, openLightbox, openTestGallery } from './support';
 
 // User story #12 — [3.2] Prev/next navigation.
 // Acceptance criteria, mapped one-to-one to the tests below:
@@ -8,38 +8,9 @@ import type { Locator, Page } from '@playwright/test';
 //     documented in GalleryGrid.astro)
 //   - Full-res image for the next/prev photo preloads before it's needed
 
-/** Open the first gallery detail page from the homepage, script bound. */
-async function openFirstGallery(page: Page) {
-  await page.goto('/');
-  await page.locator('main article').first().getByRole('link').click();
-  await expect(page).toHaveURL(/\/galleries\/[a-z0-9-]+$/);
-  await expect(page.locator('.gallery-grid')).toHaveAttribute('data-pswp-ready', '');
-}
-
-/** Click a thumbnail and wait for PhotoSwipe to finish its open animation
- *  (it ignores input until then). */
-async function openLightbox(page: Page, thumb: Locator) {
-  await thumb.click();
-  await expect(page.locator('.pswp')).toHaveClass(/pswp--ui-visible/);
-  await expect(page.locator('.pswp__img:not(.pswp__img--placeholder)').first()).toBeVisible();
-}
-
-/** The image shown on the currently-active slide. */
-function currentImage(page: Page) {
-  return page.locator(
-    '.pswp__item:not([aria-hidden="true"]) img.pswp__img:not(.pswp__img--placeholder)',
-  );
-}
-
-/** Absolute src the viewer will use for the thumbnail at `index`. */
-async function fullSrcForThumb(page: Page, index: number) {
-  const href = (await page.locator('.gallery-grid li a').nth(index).getAttribute('href')) as string;
-  return new URL(href, page.url()).href;
-}
-
 test.describe('prev/next navigation', () => {
   test('arrow buttons are present and move between photos', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const prev = page.locator('.pswp__button--arrow--prev');
@@ -58,7 +29,7 @@ test.describe('prev/next navigation', () => {
   });
 
   test('ArrowLeft / ArrowRight navigate on desktop', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     await page.keyboard.press('ArrowRight');
@@ -69,7 +40,7 @@ test.describe('prev/next navigation', () => {
   });
 
   test('navigation wraps at the first and last photo', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     const thumbs = page.locator('.gallery-grid li a');
     const count = await thumbs.count();
 
@@ -88,7 +59,7 @@ test.describe('prev/next navigation', () => {
   });
 
   test('the next photo is preloaded at full resolution before it is shown', async ({ page }) => {
-    await openFirstGallery(page);
+    await openTestGallery(page);
     await openLightbox(page, page.locator('.gallery-grid li a').first());
 
     const nextSrc = await fullSrcForThumb(page, 1);
