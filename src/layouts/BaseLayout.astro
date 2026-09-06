@@ -2,24 +2,33 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { siteName } from '../i18n/ui';
+import { getLangFromUrl, localizePath, stripLocale, t } from '../i18n/utils';
 
 interface Props {
   /** Page title. Rendered as `<title>` and the `og:title`. */
   title: string;
-  /** Meta description, 1–2 sentences. Falls back to a site default. */
+  /** Meta description, 1–2 sentences. Falls back to the locale default. */
   description?: string;
 }
 
-const { title, description = 'Photography by Abel Guillen — landscape and coastal work.' } =
-  Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const copy = t(lang);
 
-const siteName = 'Abelazo Photography';
+const { title, description = copy.metaDescription } = Astro.props;
+
 const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const basePath = stripLocale(Astro.url.pathname);
+const alternates = [
+  { hreflang: 'es', href: new URL(basePath, Astro.site ?? Astro.url).href },
+  { hreflang: 'en', href: new URL(localizePath(basePath, 'en'), Astro.site ?? Astro.url).href },
+  { hreflang: 'x-default', href: new URL(basePath, Astro.site ?? Astro.url).href },
+];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={copy.htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -30,17 +39,60 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'es_ES'} />
     <meta name="twitter:card" content="summary_large_image" />
+
+    {
+      /* Send the visitor to their preferred locale: an explicit choice
+        (the `lang` cookie set by the switcher in SiteHeader) wins; on a first
+        visit with no cookie, fall back to the browser's `Accept-Language`.
+        Runs once per tab so it can never fight in-page navigation, and only
+        ever redirects between the two mirrors of the *same* page. */
+    }
+    <script is:inline>
+      (() => {
+        try {
+          if (sessionStorage.getItem('langApplied')) return;
+          sessionStorage.setItem('langApplied', '1');
+
+          const path = location.pathname;
+          const isEn = /^\/en(\/|$)/.test(path);
+
+          const cookie = document.cookie.match(/(?:^|; )lang=(es|en)/);
+          const pref = cookie
+            ? cookie[1]
+            : (navigator.languages || [navigator.language || ''])
+                .map((l) => l.toLowerCase().slice(0, 2))
+                .find((l) => l === 'es' || l === 'en');
+
+          if (!pref || pref === (isEn ? 'en' : 'es')) return;
+          const base = path.replace(/^\/en(?=\/|$)/, '') || '/';
+          const target = pref === 'en' ? '/en' + (base === '/' ? '' : base) : base;
+          location.replace(target + location.search + location.hash);
+        } catch {
+          /* no cookie/storage access (private mode) — keep the requested locale */
+        }
+      })();
+    </script>
   </head>
   <body class="flex min-h-screen flex-col">
+    <a
+      href="#main"
+      class="sr-only rounded-sm bg-surface px-4 py-2 focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50"
+      >{copy.skipToContent}</a
+    >
     <SiteHeader />
-    <main class="mx-auto w-full max-w-[var(--width-content)] flex-1 px-4 py-8 md:px-6 md:py-10">
+    <main
+      id="main"
+      class="mx-auto w-full max-w-[var(--width-content)] flex-1 px-4 py-8 md:px-6 md:py-10"
+    >
       <slot />
     </main>
     <slot name="footer"><SiteFooter /></slot>

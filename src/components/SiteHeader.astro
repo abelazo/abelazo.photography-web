@@ -1,77 +1,111 @@
 ---
 /**
- * Site-wide masthead: a wordmark and a minimal primary nav.
+ * Site-wide masthead: the wordmark, a minimal primary nav, and a language
+ * switcher.
  *
- * Desktop: links sit inline next to the wordmark. Mobile (< md): the links
- * collapse behind a hamburger toggle — a few lines of vanilla JS, no framework.
- * The active section is marked with `aria-current="page"`.
+ * Desktop: links sit inline next to the wordmark. Mobile (< md): they collapse
+ * behind a hamburger toggle — a few lines of vanilla JS, no framework. The
+ * language switcher (🇪🇸 / 🇬🇧 flags) stays visible at both sizes; clicking it
+ * stores a `lang` cookie so the choice is remembered on the next visit (see the
+ * inline script in BaseLayout).
  */
-const links: { label: string; href: string }[] = [
-  { label: 'Galleries', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+import { siteName, locales, languages, localeFlags } from '../i18n/ui';
+import { getLangFromUrl, stripLocale, localizePath, t } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const copy = t(lang);
+const base = stripLocale(Astro.url.pathname);
+
+const home = localizePath('/', lang);
+
+const links: { label: string; href: string; match?: (b: string) => boolean }[] = [
+  {
+    label: copy.nav.session,
+    href: localizePath('/the-session', lang),
+    match: (b) => b === '/the-session',
+  },
+  {
+    label: copy.nav.galleries,
+    href: localizePath('/galleries', lang),
+    match: (b) => b === '/galleries' || b.startsWith('/galleries/'),
+  },
+  { label: copy.nav.contact, href: localizePath('/contact', lang), match: (b) => b === '/contact' },
 ];
 
-const path = Astro.url.pathname;
-
-/** A link is active for its own page and anything nested beneath it. The
- *  Galleries link also covers the gallery detail routes. */
-function isActive(href: string): boolean {
-  if (href === '/') return path === '/' || path.startsWith('/galleries');
-  return path === href || path.startsWith(`${href}/`);
+function isActive(match?: (b: string) => boolean): boolean {
+  return match ? match(base) : false;
 }
 ---
 
 <header class="border-b border-line bg-surface">
   <div
-    class="relative mx-auto flex max-w-[var(--width-content)] items-center justify-between gap-6 px-4 py-5 md:px-6"
+    class="relative mx-auto flex max-w-[var(--width-content)] items-center justify-between gap-4 px-4 py-5 md:px-6"
   >
     <a
-      href="/"
-      class="-m-2.5 p-2.5 font-serif text-lg tracking-tight hover:text-muted md:m-0 md:p-0"
-      >Abelazo</a
+      href={home}
+      class="-m-2.5 p-2.5 font-serif text-base tracking-tight hover:text-muted md:m-0 md:p-0 md:text-lg"
+      >{siteName}</a
     >
 
-    <button
-      type="button"
-      class="nav-toggle -m-2 flex size-11 items-center justify-center md:hidden"
-      aria-label="Menu"
-      aria-expanded="false"
-      aria-controls="primary-nav"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        aria-hidden="true"
+    <div class="flex items-center gap-3 md:gap-6">
+      <button
+        type="button"
+        class="nav-toggle -m-2 flex size-11 items-center justify-center md:hidden"
+        aria-label={copy.nav.menu}
+        aria-expanded="false"
+        aria-controls="primary-nav"
       >
-        <path d="M3 5h14M3 10h14M3 15h14"></path>
-      </svg>
-    </button>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M3 5h14M3 10h14M3 15h14"></path>
+        </svg>
+      </button>
 
-    <nav id="primary-nav" aria-label="Primary" class="nav-menu hidden md:block">
-      <ul
-        class="absolute inset-x-0 top-full z-10 flex flex-col gap-1 border-b border-line bg-surface px-4 py-2 text-sm md:static md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0"
-      >
+      <nav id="primary-nav" aria-label={copy.nav.primary} class="nav-menu hidden md:block">
+        <ul
+          class="absolute inset-x-0 top-full z-10 flex flex-col gap-1 border-b border-line bg-surface px-4 py-2 text-sm md:static md:flex-row md:items-center md:gap-6 md:border-0 md:bg-transparent md:p-0"
+        >
+          {
+            links.map(({ label, href, match }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={isActive(match) ? 'page' : undefined}
+                  class="block py-3 text-muted transition-colors hover:text-ink aria-[current=page]:text-ink md:py-0"
+                >
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label={copy.nav.language} class="-mr-2 flex items-center">
         {
-          links.map(({ label, href }) => (
-            <li>
-              <a
-                href={href}
-                aria-current={isActive(href) ? 'page' : undefined}
-                class="block py-3 text-muted transition-colors hover:text-ink aria-[current=page]:text-ink md:py-0"
-              >
-                {label}
-              </a>
-            </li>
+          locales.map((code) => (
+            <a
+              href={localizePath(base, code)}
+              data-set-lang={code}
+              hreflang={code}
+              aria-current={code === lang ? 'true' : undefined}
+              class="-my-2 flex size-10 items-center justify-center rounded-full text-base leading-none opacity-50 transition hover:opacity-100 aria-[current=true]:bg-line aria-[current=true]:opacity-100"
+            >
+              <span class="sr-only">{languages[code]}</span>
+              <span aria-hidden="true">{localeFlags[code]}</span>
+            </a>
           ))
         }
-      </ul>
-    </nav>
+      </nav>
+    </div>
   </div>
 </header>
 
@@ -93,6 +127,21 @@ function isActive(href: string): boolean {
       if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
         setOpen(false);
         toggle.focus();
+      }
+    });
+  }
+
+  // Remember an explicit language choice for the next visit.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-set-lang]')) {
+    link.addEventListener('click', () => {
+      const choice = link.dataset.setLang;
+      if (choice) {
+        document.cookie = `lang=${choice}; path=/; max-age=31536000; samesite=lax`;
+        try {
+          sessionStorage.removeItem('langApplied');
+        } catch {
+          /* private mode — the cookie alone is enough */
+        }
       }
     });
   }

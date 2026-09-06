@@ -1,0 +1,32 @@
+---
+/** Contact page body. Email is the only booking channel for now. */
+import { contactEmail } from '../i18n/ui';
+import { t } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = t(lang).contact;
+---
+
+<section class="max-w-2xl">
+  <h1 class="text-3xl md:text-4xl">{c.title}</h1>
+  <p class="mt-4 text-lg text-muted">{c.lead}</p>
+
+  <dl class="mt-8 border-t border-line pt-6">
+    <dt class="text-xs uppercase tracking-[0.2em] text-muted">{c.emailLabel}</dt>
+    <dd class="mt-2 text-xl">
+      <a
+        class="underline decoration-line underline-offset-4 hover:text-muted"
+        href={`mailto:${contactEmail}`}
+      >
+        {contactEmail}
+      </a>
+    </dd>
+  </dl>
+
+  <p class="mt-6 text-sm text-muted">{c.responseNote}</p>
+</section>

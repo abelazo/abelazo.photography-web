@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GalleryDetail from '../../../components/GalleryDetail.astro';
+import { galleryDetailPaths, localizedGallery } from '../../../lib/galleries';
+
+// Detail page (English). Spanish original: `src/pages/galleries/[slug].astro`.
+// Both share `galleryDetailPaths` — the slug set is locale-independent.
+export const getStaticPaths = galleryDetailPaths;
+
+const { gallery } = Astro.props;
+const { title, description } = localizedGallery(gallery, 'en');
+---
+
+<BaseLayout title={title} description={description}>
+  <GalleryDetail lang="en" gallery={gallery} />
+</BaseLayout>

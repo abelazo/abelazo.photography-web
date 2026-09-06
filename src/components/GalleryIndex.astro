@@ -1,0 +1,61 @@
+---
+/**
+ * The galleries index — every published gallery as a large card, nothing else.
+ *
+ * Rendered by `src/pages/galleries/index.astro` (es) and
+ * `src/pages/en/galleries/index.astro` (en); the only difference is the `lang`
+ * prop. Copy lives in `src/i18n/ui.ts` under `galleries`; gallery
+ * titles/descriptions come from the content collection via `localizedGallery`.
+ */
+import { Picture } from 'astro:assets';
+import { localizePath, t } from '../i18n/utils';
+import { getGalleries, galleryHref, localizedGallery } from '../lib/galleries';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = t(lang).galleries;
+
+const galleries = await getGalleries();
+---
+
+<section class="max-w-2xl pt-4 md:pt-10">
+  <h1 class="font-serif text-4xl leading-tight md:text-5xl">{c.title}</h1>
+  <p class="mt-4 text-muted">{c.lead}</p>
+</section>
+
+{
+  galleries.length === 0 ? (
+    <p class="mt-16 text-muted">{c.empty}</p>
+  ) : (
+    <ul class="mt-12 grid gap-x-8 gap-y-16 sm:grid-cols-2 md:mt-16">
+      {galleries.map((gallery, index) => {
+        const localized = localizedGallery(gallery, lang);
+        return (
+          <li>
+            <a href={localizePath(galleryHref(gallery), lang)} class="group block">
+              <div class="overflow-hidden bg-line">
+                <Picture
+                  src={gallery.data.cover}
+                  alt=""
+                  formats={['avif', 'webp']}
+                  width={880}
+                  height={587}
+                  densities={[1, 2]}
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                  class="aspect-3/2 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              </div>
+              <h2 class="mt-4 text-2xl group-hover:text-muted">{localized.title}</h2>
+              <p class="mt-1 text-sm text-muted">{localized.description}</p>
+              <p class="mt-2 text-xs text-muted">{c.photos(gallery.data.photos.length)}</p>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}

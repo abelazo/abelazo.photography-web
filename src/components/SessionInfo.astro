@@ -1,0 +1,118 @@
+---
+/**
+ * "La sesión" page body, in one locale — who a session is for, what it includes,
+ * the four types of session, and how the day unfolds, ending in a call to action.
+ *
+ * Rendered by `src/pages/the-session.astro` (es) and `src/pages/en/the-session.astro`
+ * (en); the only difference is the `lang` prop. Copy lives in `src/i18n/ui.ts`
+ * under `session`.
+ */
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { localizePath, t } from '../i18n/utils';
+import { gallerySlug } from '../lib/galleries';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = t(lang);
+const s = c.session;
+
+const contactPath = localizePath('/contact', lang);
+
+// Covers for the "types of session" cards — read unfiltered so the cards keep
+// their image even while the galleries are still drafts.
+const allGalleries = await getCollection('galleries');
+const coverBySlug = new Map(allGalleries.map((g) => [gallerySlug(g), g]));
+const typeKeys = ['personal', 'profesional', 'moda', 'editorial'] as const;
+---
+
+<article>
+  {/* ---- Intro ---- */}
+  <section class="max-w-2xl pt-4 md:pt-10">
+    <h1 class="font-serif text-4xl leading-tight md:text-5xl">{s.title}</h1>
+    <p class="mt-6 text-lg text-muted md:text-xl">{s.lead}</p>
+  </section>
+
+  {/* ---- Who it is for ---- */}
+  <section class="mt-24 max-w-2xl md:mt-32">
+    <p class="text-xs uppercase tracking-[0.2em] text-muted">{s.forWho.kicker}</p>
+    <h2 class="mt-3 text-2xl md:text-3xl">{s.forWho.title}</h2>
+    {s.forWho.body.map((p) => <p class="mt-4 text-muted">{p}</p>)}
+  </section>
+
+  {/* ---- What a session includes ---- */}
+  <section class="mt-24 md:mt-32">
+    <p class="text-xs uppercase tracking-[0.2em] text-muted">{s.includes.kicker}</p>
+    <h2 class="mt-3 text-2xl md:text-3xl">{s.includes.title}</h2>
+    <ol class="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+      {
+        s.includes.items.map((item, i) => (
+          <li class="border-t border-line pt-4">
+            <p class="font-serif text-sm text-muted">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="mt-1 text-lg">{item.title}</h3>
+            <p class="mt-2 text-sm text-muted">{item.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  {/* ---- Types of session ---- */}
+  <section class="mt-24 md:mt-32">
+    <p class="text-xs uppercase tracking-[0.2em] text-muted">{s.types.kicker}</p>
+    <h2 class="mt-3 text-2xl md:text-3xl">{s.types.title}</h2>
+    <p class="mt-3 max-w-2xl text-sm text-muted">{s.types.lead}</p>
+    <ul class="mt-8 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        typeKeys.map((key) => {
+          const gallery = coverBySlug.get(key);
+          const meta = s.types.items[key];
+          return (
+            <li>
+              <a href={localizePath(`/galleries/${key}`, lang)} class="group block">
+                {gallery && (
+                  <div class="overflow-hidden bg-line">
+                    <Picture
+                      src={gallery.data.cover}
+                      alt=""
+                      formats={['avif', 'webp']}
+                      width={480}
+                      height={600}
+                      densities={[1, 2]}
+                      class="aspect-4/5 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                  </div>
+                )}
+                <h3 class="mt-4 text-xl group-hover:text-muted">{meta.title}</h3>
+                <p class="mt-1 text-sm text-muted">{meta.body}</p>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  {/* ---- Session day ---- */}
+  <section class="mt-24 max-w-2xl md:mt-32">
+    <p class="text-xs uppercase tracking-[0.2em] text-muted">{s.day.kicker}</p>
+    <h2 class="mt-3 text-2xl md:text-3xl">{s.day.title}</h2>
+    {s.day.body.map((p) => <p class="mt-4 text-muted">{p}</p>)}
+  </section>
+
+  {/* ---- Call to action ---- */}
+  <section class="mt-24 max-w-2xl border-t border-line pt-10 md:mt-32">
+    <h2 class="text-2xl md:text-3xl">{s.cta.title}</h2>
+    <p class="mt-4 text-muted">{s.cta.body}</p>
+    <a
+      href={contactPath}
+      class="mt-6 inline-flex items-center rounded-full bg-ink px-6 py-3 text-sm text-canvas transition-colors hover:bg-muted"
+    >
+      {c.cta.book}
+    </a>
+  </section>
+</article>

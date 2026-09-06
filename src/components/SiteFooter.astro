@@ -1,5 +1,10 @@
 ---
-/** Site-wide footer. Attribution and nothing that competes with the work. */
+/** Site-wide footer. Attribution, location, and the contact email. */
+import { contactEmail } from '../i18n/ui';
+import { getLangFromUrl, t } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const copy = t(lang);
 const year = new Date().getFullYear();
 ---
 
@@ -7,7 +12,10 @@ const year = new Date().getFullYear();
   <div
     class="mx-auto flex max-w-[var(--width-content)] flex-col gap-1 px-6 py-10 text-sm text-muted md:flex-row md:items-center md:justify-between md:px-10"
   >
-    <p>&copy; {year} Abel Guillen</p>
-    <p>Photography</p>
+    <p>{copy.footer.rights(year)}</p>
+    <p>
+      {copy.footer.location} ·
+      <a class="hover:text-ink" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+    </p>
   </div>
 </footer>

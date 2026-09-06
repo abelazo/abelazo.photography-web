@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SessionInfo from '../components/SessionInfo.astro';
+import { t } from '../i18n/utils';
+
+const copy = t('es');
+---
+
+<BaseLayout title={copy.session.title} description={copy.session.metaDescription}>
+  <SessionInfo lang="es" />
+</BaseLayout>

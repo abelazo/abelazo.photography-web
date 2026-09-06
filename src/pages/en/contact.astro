@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactPanel from '../../components/ContactPanel.astro';
+import { t } from '../../i18n/utils';
+
+const copy = t('en');
+---
+
+<BaseLayout title={copy.contact.title} description={copy.contact.lead}>
+  <ContactPanel lang="en" />
+</BaseLayout>

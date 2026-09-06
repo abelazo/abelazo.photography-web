@@ -127,4 +127,42 @@ describe('galleriesSchema', () => {
   it('rejects a non-kebab-case slug override', () => {
     expect(schema.safeParse({ ...valid, slug: 'Coastal Mornings' }).success).toBe(false);
   });
+
+  describe('i18n overrides', () => {
+    const withI18n = {
+      ...valid,
+      i18n: { en: { title: 'Fashion', description: 'Studio fashion work.' } },
+    };
+
+    it('omits i18n when absent', () => {
+      expect(schema.parse(valid).i18n).toBeUndefined();
+    });
+
+    it('accepts an i18n.en title and description', () => {
+      expect(schema.parse(withI18n).i18n).toEqual({
+        en: { title: 'Fashion', description: 'Studio fashion work.' },
+      });
+    });
+
+    it('rejects an incomplete i18n.en block', () => {
+      expect(schema.safeParse({ ...valid, i18n: { en: { title: 'Fashion' } } }).success).toBe(
+        false,
+      );
+    });
+
+    it('rejects an unknown locale key under i18n', () => {
+      expect(
+        schema.safeParse({ ...valid, i18n: { fr: { title: 'Mode', description: 'x' } } }).success,
+      ).toBe(false);
+    });
+
+    it('rejects an unknown key inside i18n.en', () => {
+      expect(
+        schema.safeParse({
+          ...valid,
+          i18n: { en: { title: 'F', description: 'x', subtitle: 'y' } },
+        }).success,
+      ).toBe(false);
+    });
+  });
 });

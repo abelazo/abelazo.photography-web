@@ -10,4 +10,11 @@ export default defineConfig([
   tseslint.configs.recommended,
   astro.configs.recommended,
   prettier,
+  {
+    // Node maintenance scripts (not part of the built site).
+    files: ['scripts/**/*.{js,mjs}'],
+    languageOptions: {
+      globals: { Buffer: 'readonly', console: 'readonly', process: 'readonly' },
+    },
+  },
 ]);

@@ -17,13 +17,17 @@ Every gallery is two things that share one **slug**:
 | A markdown file | `src/content/galleries/<slug>.md` | Title, description, date, and the photo list |
 | An image folder | `src/assets/galleries/<slug>/`    | The actual `.jpg` files                      |
 
-`coastal-mornings` and `harbour-lights` already exist as working samples. The
-fastest way to make a new gallery is to copy one of them and replace its parts.
+`personal`, `profesional`, `moda` and `editorial` already exist as **draft**
+samples (placeholder gradient images, `draft: true`). The fastest way to make a
+new gallery is to copy one of them and replace its parts. The examples further
+down still use an older `coastal-mornings` gallery purely to illustrate the
+schema fields.
 
-There is **no index, registry, or route to edit**. Both pages that list
-galleries — the home page and each detail page — read the collection at build
-time through the helpers in `src/lib/galleries.ts`. Drop in the two paths above
-and the gallery appears; nothing else in the codebase references it.
+There is **no index, registry, or route to edit**. The pages that list galleries
+— the home page taster, the `/galleries` index, and each detail page — read the
+collection at build time through the helpers in `src/lib/galleries.ts`. Drop in
+the two paths above and the gallery appears; nothing else in the codebase
+references it.
 
 ## Naming conventions
 
@@ -156,6 +160,10 @@ photos: # required — at least one; array order is display order
     alt: Low grey cloud pressing down over a flat, calm sea.
 
 # --- everything below is optional ---
+i18n: # English overrides for the /en/ pages; Spanish frontmatter above is the default
+  en:
+    title: Fashion
+    description: Studio fashion work.
 location: Northumberland coast # rendered on the detail page only when set
 tags: # rendered only when non-empty; must have at least one entry if present
   - landscape
@@ -169,19 +177,20 @@ Optional prose body. Markdown. Shown on the gallery page above the photos. Leave
 it out if you have nothing to say.
 ```
 
-| Field         | Required | Type              | Notes                                                                                        |
-| :------------ | :------: | :---------------- | :------------------------------------------------------------------------------------------- |
-| `title`       |   yes    | string            | Headings and nav.                                                                            |
-| `description` |   yes    | string            | 1–2 sentences; reused as the meta description.                                               |
-| `date`        |   yes    | `YYYY-MM-DD`      | Capture date.                                                                                |
-| `cover`       |   yes    | image path        | Relative to the markdown file.                                                               |
-| `photos`      |   yes    | list              | `{ src, alt, title? }` each; array order is display order; `alt` required, `title` optional. |
-| `location`    |    no    | string            | Shown on the detail page when set.                                                           |
-| `tags`        |    no    | list of strings   | Shown on the detail page when non-empty.                                                     |
-| `featured`    |    no    | boolean (`false`) | `true` → also appears on the home page.                                                      |
-| `draft`       |    no    | boolean (`false`) | `true` → hidden from the built site, visible in `pnpm dev`.                                  |
-| `order`       |    no    | integer (`0`)     | Ascending sort key; ties break by `date`, newest first.                                      |
-| `slug`        |    no    | string            | URL slug; defaults to the file name.                                                         |
+| Field         | Required | Type                             | Notes                                                                                        |
+| :------------ | :------: | :------------------------------- | :------------------------------------------------------------------------------------------- |
+| `title`       |   yes    | string                           | Headings and nav.                                                                            |
+| `description` |   yes    | string                           | 1–2 sentences; reused as the meta description.                                               |
+| `date`        |   yes    | `YYYY-MM-DD`                     | Capture date.                                                                                |
+| `cover`       |   yes    | image path                       | Relative to the markdown file.                                                               |
+| `photos`      |   yes    | list                             | `{ src, alt, title? }` each; array order is display order; `alt` required, `title` optional. |
+| `i18n`        |    no    | `{ en: { title, description } }` | English overrides for the `/en/` pages; missing → falls back to the Spanish values.          |
+| `location`    |    no    | string                           | Shown on the detail page when set.                                                           |
+| `tags`        |    no    | list of strings                  | Shown on the detail page when non-empty.                                                     |
+| `featured`    |    no    | boolean (`false`)                | `true` → also appears on the home page.                                                      |
+| `draft`       |    no    | boolean (`false`)                | `true` → hidden from the built site, visible in `pnpm dev`.                                  |
+| `order`       |    no    | integer (`0`)                    | Ascending sort key; ties break by `date`, newest first.                                      |
+| `slug`        |    no    | string                           | URL slug; defaults to the file name.                                                         |
 
 ### Drafts
 

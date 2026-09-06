@@ -1,3 +1,49 @@
+## What this site is
+
+The site for **Abelazo Photography** — a natural-light photo studio in Tres
+Cantos (Madrid). It exists to get visitors to book a session (personal,
+professional, fashion, editorial) and is aimed at people who have **never posed
+before**. Tagline: _"Todo el mundo se merece tener fotografías profesionales"_.
+Booking is by email only for now (`contactEmail` in `src/i18n/ui.ts`).
+
+The home page (`src/pages/index.astro` → `src/components/StudioLanding.astro`) is
+a short intro (the two key messages) plus a taster of the galleries — nothing
+else. The full galleries list is its own page, **`/galleries`**
+(`src/pages/galleries/index.astro` → `src/components/GalleryIndex.astro`); the
+per-gallery pages sit under it at `/galleries/<slug>`. The detail of what a
+session is (who it is for, what it includes, the four types, the session day)
+lives on **`/the-session`** (`src/pages/the-session.astro` →
+`src/components/SessionInfo.astro`). There is no "el estudio" page. Every
+"Reserva tu sesión" CTA links to `/contact`. Nav: **La sesión · Galerías ·
+Contacto** (visitor-facing labels are translated; the URLs are not — see below).
+
+## Internationalization (ES / EN)
+
+- **URL path segments are always English, in both locales** — never Spanish, never
+  translated. The visitor-facing nav/label copy is localized; the routes are not.
+  Pages: `/the-session`, `/contact`, `/galleries`, `/galleries/<slug>`. When
+  adding a page, name the file with an English segment and mirror it under
+  `src/pages/en/` with the same segment.
+- Spanish is the default locale and has **no URL prefix** (`/`, `/the-session`,
+  `/contact`, `/galleries/<slug>`). English lives under **`/en/`** (`/en/`,
+  `/en/the-session`, `/en/contact`, `/en/galleries/<slug>`) — same path segments,
+  just prefixed. Config: the `i18n` block in `astro.config.mjs`
+  (`prefixDefaultLocale: false`).
+- **All UI copy** lives in `src/i18n/ui.ts`, one tree per locale. Components read
+  `t(lang)` from `src/i18n/utils.ts` — never hardcode visitor-facing strings.
+  Every key in `es` must also exist in `en`.
+- Locale helpers in `src/i18n/utils.ts`: `getLangFromUrl`, `stripLocale`,
+  `localizePath` (unit-tested in `utils.test.ts`).
+- Each page has an ES file under `src/pages/` and an EN mirror under
+  `src/pages/en/`; both render the same component with a different `lang` prop
+  (`StudioLanding`, `GalleryIndex`, `SessionInfo`, `ContactPanel`,
+  `GalleryDetail`).
+- The language switcher (in `SiteHeader.astro`) stores a `lang` cookie; an inline
+  script in `BaseLayout.astro` applies that preference once per tab on load.
+- Gallery `title`/`description` are Spanish; add an optional `i18n.en` block in
+  the frontmatter for the English pages (`localizedGallery` in
+  `src/lib/galleries.ts` handles the fallback).
+
 ## Environment
 
 - Node `24.20.0`, pinned in `.nvmrc` (matches the Netlify build image). Run `nvm use`.

@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GalleryIndex from '../../../components/GalleryIndex.astro';
+import { t } from '../../../i18n/utils';
+
+const copy = t('en');
+---
+
+<BaseLayout title={copy.galleries.title} description={copy.galleries.lead}>
+  <GalleryIndex lang="en" />
+</BaseLayout>

@@ -1,0 +1,75 @@
+---
+/**
+ * Gallery detail body — the metadata block above the responsive thumbnail grid
+ * (`GalleryGrid`, which owns the PhotoSwipe viewer). No cover hero; the grid
+ * leads. Rendered by `src/pages/galleries/[slug].astro` (es) and
+ * `src/pages/en/galleries/[slug].astro` (en).
+ */
+import GalleryGrid from './GalleryGrid.astro';
+import { localizedGallery, type Gallery } from '../lib/galleries';
+import { localizePath, t } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  gallery: Gallery;
+}
+
+const { lang, gallery } = Astro.props;
+const c = t(lang).gallery;
+const { title, description } = localizedGallery(gallery, lang);
+const { date, location, tags, photos, draft } = gallery.data;
+
+const galleriesHref = localizePath('/galleries', lang);
+const captured = date.toLocaleDateString(lang === 'en' ? 'en-GB' : 'es-ES', {
+  year: 'numeric',
+  month: 'long',
+});
+const isoDate = date.toISOString().slice(0, 10);
+---
+
+<section class="max-w-2xl">
+  <p class="text-sm text-muted">
+    <a href={galleriesHref} class="-my-3 inline-block py-3 hover:text-ink">{c.back}</a>
+  </p>
+  <h1 class="mt-4 text-3xl md:text-4xl">{title}</h1>
+  <p class="mt-3 text-lg text-muted">{description}</p>
+  <dl class="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
+    <div>
+      <dt class="sr-only">{c.meta.date}</dt>
+      <dd><time datetime={isoDate}>{captured}</time></dd>
+    </div>
+    {
+      location && (
+        <div>
+          <dt class="sr-only">{c.meta.location}</dt>
+          <dd>{location}</dd>
+        </div>
+      )
+    }
+    {
+      tags && (
+        <div>
+          <dt class="sr-only">{c.meta.tags}</dt>
+          <dd>
+            <ul class="flex flex-wrap gap-x-3">
+              {tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      )
+    }
+  </dl>
+  {
+    draft && (
+      <p class="mt-4 rounded-sm border border-line bg-surface px-3 py-2 text-xs text-muted">
+        {c.draftNotice}
+      </p>
+    )
+  }
+</section>
+
+<h2 class="mt-8 text-sm text-muted">{c.photos(photos.length)}</h2>
+<GalleryGrid photos={photos} />

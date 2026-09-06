@@ -21,9 +21,9 @@ const BROKEN_GALLERY = `---
 title: Build Gate Fixture
 description: Temporary broken gallery — asserts the schema fails the build.
 date: 2026-01-01
-cover: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
+cover: ../../assets/galleries/personal/01-placeholder.jpg
 photos:
-  - src: ../../assets/galleries/coastal-mornings/01-tide-line.jpg
+  - src: ../../assets/galleries/personal/01-placeholder.jpg
 ---
 
 Fixture for content.build.test.ts. Never committed — the test deletes it.

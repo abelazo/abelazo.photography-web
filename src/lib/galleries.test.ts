@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { byDisplayOrder, isListed, type Gallery } from './galleries';
+import { byDisplayOrder, isListed, localizedGallery, type Gallery } from './galleries';
 
 // Minimal stand-in: only the frontmatter fields the ordering/visibility rules
 // read. `order` and `draft` carry the schema defaults so a test states just the
@@ -39,5 +39,35 @@ describe('isListed', () => {
   it('hides a draft from the production build but keeps it in dev', () => {
     expect(isListed(gallery({ draft: true }), false)).toBe(false);
     expect(isListed(gallery({ draft: true }), true)).toBe(true);
+  });
+});
+
+describe('localizedGallery', () => {
+  const base = gallery({
+    title: 'Moda',
+    description: 'Trabajo de moda en estudio.',
+    i18n: { en: { title: 'Fashion', description: 'Studio fashion work.' } },
+  });
+
+  it('returns the frontmatter copy for the default locale', () => {
+    expect(localizedGallery(base, 'es')).toEqual({
+      title: 'Moda',
+      description: 'Trabajo de moda en estudio.',
+    });
+  });
+
+  it('applies the i18n.en override for English', () => {
+    expect(localizedGallery(base, 'en')).toEqual({
+      title: 'Fashion',
+      description: 'Studio fashion work.',
+    });
+  });
+
+  it('falls back to the default copy when no override exists', () => {
+    const noOverride = gallery({ title: 'Personal', description: 'Retratos personales.' });
+    expect(localizedGallery(noOverride, 'en')).toEqual({
+      title: 'Personal',
+      description: 'Retratos personales.',
+    });
   });
 });

@@ -31,6 +31,24 @@ export function galleriesSchema({ image }: SchemaContext) {
       location: z.string().min(1).optional(),
       /** Free-form keywords. Optional; rendered only when non-empty. */
       tags: z.array(z.string().min(1)).nonempty().optional(),
+      /**
+       * Optional per-locale overrides for the visitor-facing strings. The
+       * frontmatter above is the Spanish (default) copy; add `i18n.en` to give
+       * the English pages a translated title and description. Anything not
+       * overridden falls back to the Spanish value — see `localizedGallery` in
+       * `src/lib/galleries.ts`.
+       */
+      i18n: z
+        .object({
+          en: z
+            .object({
+              title: z.string().min(1),
+              description: z.string().min(1),
+            })
+            .strict(),
+        })
+        .strict()
+        .optional(),
       /** Cover image, as a path relative to this markdown file. */
       cover: image(),
       /** Surface this gallery on the home page. */

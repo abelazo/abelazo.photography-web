@@ -1,6 +1,27 @@
+import type { GetStaticPaths } from 'astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { type Lang } from '../i18n/ui';
 
 export type Gallery = CollectionEntry<'galleries'>;
+
+/**
+ * A gallery's title and description in the requested locale.
+ *
+ * The frontmatter `title`/`description` are the Spanish (default) copy; an
+ * optional `i18n.en` block overrides them for the English pages. A missing
+ * override falls back to the default-locale value, so a half-translated gallery
+ * still renders.
+ */
+export function localizedGallery(
+  gallery: Gallery,
+  lang: Lang,
+): { title: string; description: string } {
+  const override = lang === 'en' ? gallery.data.i18n?.en : undefined;
+  return {
+    title: override?.title ?? gallery.data.title,
+    description: override?.description ?? gallery.data.description,
+  };
+}
 
 /** A gallery's URL slug: the frontmatter override, or the file name. */
 export function gallerySlug(gallery: Gallery): string {
@@ -54,3 +75,18 @@ export async function getGalleries(): Promise<Gallery[]> {
 export async function getFeaturedGalleries(): Promise<Gallery[]> {
   return (await getGalleries()).filter((gallery) => gallery.data.featured);
 }
+
+/**
+ * `getStaticPaths` for the gallery detail route — one page per published
+ * gallery, keyed by {@link gallerySlug}. Shared verbatim by the ES route
+ * (`src/pages/galleries/[slug].astro`) and its EN mirror
+ * (`src/pages/en/galleries/[slug].astro`); the locale is the only thing that
+ * differs between them and that lives in the page, not the paths.
+ */
+export const galleryDetailPaths = (async () => {
+  const galleries = await getGalleries();
+  return galleries.map((gallery) => ({
+    params: { slug: gallerySlug(gallery) },
+    props: { gallery },
+  }));
+}) satisfies GetStaticPaths;
