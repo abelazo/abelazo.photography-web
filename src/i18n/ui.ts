@@ -69,9 +69,9 @@ const es = {
 
   session: {
     title: 'La sesión',
-    lead: 'Cómo trabajo, qué incluye una sesión y cómo es el día que vienes al estudio.',
+    lead: 'Cómo trabajo, qué incluye una sesión y los tipos de sesión que hay.',
     metaDescription:
-      'Cómo es una sesión de fotos en el estudio de Tres Cantos: para quién es, qué incluye, tipos de sesión y cómo transcurre el día.',
+      'Cómo es una sesión de fotos en el estudio de Tres Cantos: para quién es, qué incluye y tipos de sesión.',
 
     forWho: {
       kicker: 'Para quién es',
@@ -131,15 +131,6 @@ const es = {
           body: 'Series con una idea detrás, para publicaciones, marcas o trabajo de autor.',
         },
       },
-    },
-
-    day: {
-      kicker: 'El día de la sesión',
-      title: 'Cómo es el día de la sesión',
-      body: [
-        'La sesión empieza en la zona de preparación mientras terminamos de hablar del look y los fondos. Después pasamos a fotografiar, con dirección en cada pose y sin prisa.',
-        'Al final vemos juntos las imágenes en el ordenador para que elijas tus favoritas. La duración depende del tipo de sesión, pero cuenta con una mañana tranquila.',
-      ],
     },
 
     cta: {
@@ -215,9 +206,9 @@ const en = {
 
   session: {
     title: 'The session',
-    lead: 'How I work, what a session includes, and what the day at the studio is like.',
+    lead: 'How I work, what a session includes, and the types of session available.',
     metaDescription:
-      'What a photo session at the Tres Cantos studio is like: who it is for, what it includes, types of session and how the day unfolds.',
+      'What a photo session at the Tres Cantos studio is like: who it is for, what it includes and types of session.',
 
     forWho: {
       kicker: 'Who it is for',
@@ -277,15 +268,6 @@ const en = {
           body: 'Series built around an idea, for publications, brands or personal work.',
         },
       },
-    },
-
-    day: {
-      kicker: 'Session day',
-      title: 'What the session day is like',
-      body: [
-        'The session starts in the preparation area while we finish talking through the look and the backdrops. Then we move to shooting, with direction on every pose and no rush.',
-        'At the end we look through the images together on the computer so you can choose your favourites. Length depends on the type of session, but plan for a calm morning.',
-      ],
     },
 
     cta: {
