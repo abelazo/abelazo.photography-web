@@ -1,3 +1,11 @@
+## [1.12.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.11.0...v1.12.0) (2026-09-15)
+
+### Features
+
+* **content:** Add favicon, update header and publish draft galleries ([#42](https://github.com/abelazo/abelazo.photography-web/issues/42)) ([8be214f](https://github.com/abelazo/abelazo.photography-web/commit/8be214fbc66c7f343064e608671ebeecd5261bbf))
+* **content:** Break email if for responsive devices ([#39](https://github.com/abelazo/abelazo.photography-web/issues/39)) ([146658f](https://github.com/abelazo/abelazo.photography-web/commit/146658f816ee8ff0064dff932a9dbb28a77a763d))
+* **content:** Contact page ([#39](https://github.com/abelazo/abelazo.photography-web/issues/39)) ([987c99a](https://github.com/abelazo/abelazo.photography-web/commit/987c99a22ee0500491b7d42cef1625a6aa92ad3b))
+
 ## [1.11.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.10.0...v1.11.0) (2026-09-06)
 
 ### Features
