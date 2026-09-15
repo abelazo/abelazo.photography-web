@@ -39,9 +39,9 @@ export const contactEmail = 'hola@abelazo.photography';
 
 const es = {
   htmlLang: 'es',
-  tagline: 'Estudio de fotografía en Tres Cantos',
+  tagline: 'Fotógrafo en Tres Cantos',
   metaDescription:
-    'Estudio de fotografía en Tres Cantos. Sesiones personales, profesionales, de moda y editoriales para gente que quiere fotografías profesionales — hayas posado antes o no.',
+    'Fotógrafo en Tres Cantos. Sesiones personales, profesionales, de moda y editoriales para gente que quiere fotografías profesionales — hayas posado antes o no.',
   skipToContent: 'Saltar al contenido',
 
   nav: {
@@ -185,9 +185,9 @@ export type UiTree = typeof es;
 
 const en = {
   htmlLang: 'en',
-  tagline: 'Photography studio in Tres Cantos',
+  tagline: 'Photographer in Tres Cantos',
   metaDescription:
-    'Photography studio in Tres Cantos, near Madrid. Personal, professional, fashion and editorial sessions for people who want professional photographs — whether or not you have ever posed before.',
+    'Photographer in Tres Cantos, near Madrid. Personal, professional, fashion and editorial sessions for people who want professional photographs — whether or not you have ever posed before.',
   skipToContent: 'Skip to content',
 
   nav: {

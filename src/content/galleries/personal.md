@@ -4,7 +4,6 @@ description: Retratos para ti — un regalo, un momento que celebrar o el gusto 
 date: 2026-09-01
 location: Tres Cantos, Madrid
 featured: true
-draft: true
 order: 10
 cover: ../../assets/galleries/personal/01-placeholder.jpg
 i18n:

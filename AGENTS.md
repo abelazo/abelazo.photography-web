@@ -32,6 +32,12 @@ Contacto** (visitor-facing labels are translated; the URLs are not — see below
 - **All UI copy** lives in `src/i18n/ui.ts`, one tree per locale. Components read
   `t(lang)` from `src/i18n/utils.ts` — never hardcode visitor-facing strings.
   Every key in `es` must also exist in `en`.
+- **Keep locales in sync.** Whenever text is added or edited in one locale's
+  tree (`es` or `en`) in `src/i18n/ui.ts`, update the other locale's
+  corresponding text in the same change — as a translation, not a copy-paste.
+  This applies to any visitor-facing copy, not just `src/i18n/ui.ts`: gallery
+  frontmatter (`description`, and the optional `i18n.en` override) and any
+  other bilingual content follow the same rule.
 - Locale helpers in `src/i18n/utils.ts`: `getLangFromUrl`, `stripLocale`,
   `localizePath` (unit-tested in `utils.test.ts`).
 - Each page has an ES file under `src/pages/` and an EN mirror under

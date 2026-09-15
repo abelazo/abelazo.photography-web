@@ -4,7 +4,6 @@ description: Series con una idea detrás, para publicaciones, marcas o trabajo d
 date: 2026-09-01
 location: Tres Cantos, Madrid
 featured: true
-draft: true
 order: 40
 cover: ../../assets/galleries/editorial/01-placeholder.jpg
 i18n:

@@ -1,9 +1,9 @@
 ---
 /**
- * Site-wide masthead: the wordmark, a minimal primary nav, and a language
+ * Site-wide masthead: the logo, a minimal primary nav, and a language
  * switcher.
  *
- * Desktop: links sit inline next to the wordmark. Mobile (< md): they collapse
+ * Desktop: links sit inline next to the logo. Mobile (< md): they collapse
  * behind a hamburger toggle — a few lines of vanilla JS, no framework. The
  * language switcher (🇪🇸 / 🇬🇧 flags) stays visible at both sizes; clicking it
  * stores a `lang` cookie so the choice is remembered on the next visit (see the
@@ -17,6 +17,11 @@ const copy = t(lang);
 const base = stripLocale(Astro.url.pathname);
 
 const home = localizePath('/', lang);
+
+// Split "Abelazo Photography" into the two-tier mark/type treatment the
+// print logo uses (bold mark over tracked-out type name).
+const [brandMark, ...brandTypeWords] = siteName.split(' ');
+const brandType = brandTypeWords.join(' ');
 
 const links: { label: string; href: string; match?: (b: string) => boolean }[] = [
   {
@@ -43,9 +48,19 @@ function isActive(match?: (b: string) => boolean): boolean {
   >
     <a
       href={home}
-      class="-m-2.5 p-2.5 font-serif text-base tracking-tight hover:text-muted md:m-0 md:p-0 md:text-lg"
-      >{siteName}</a
+      aria-label={siteName}
+      class="-m-2.5 flex items-center gap-2.5 p-2.5 hover:opacity-80 md:m-0 md:p-0"
     >
+      <img src="/favicon.svg" alt="" width="30" height="30" class="shrink-0" />
+      <span class="flex flex-col justify-center leading-none">
+        <span class="font-serif text-lg font-semibold tracking-tight text-ink uppercase">
+          {brandMark}
+        </span>
+        <span class="font-serif text-[10px] font-medium tracking-[0.3em] text-muted uppercase">
+          {brandType}
+        </span>
+      </span>
+    </a>
 
     <div class="flex items-center gap-3 md:gap-6">
       <button

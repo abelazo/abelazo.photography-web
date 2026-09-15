@@ -4,7 +4,6 @@ description: Marca personal, headshots y fotos de equipo que transmiten presenci
 date: 2026-09-01
 location: Tres Cantos, Madrid
 featured: true
-draft: true
 order: 20
 cover: ../../assets/galleries/profesional/01-placeholder.jpg
 i18n:

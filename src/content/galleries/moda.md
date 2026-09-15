@@ -4,7 +4,6 @@ description: Looks, estilismo y luz de revista para un book o para tu proyecto.
 date: 2026-09-01
 location: Tres Cantos, Madrid
 featured: true
-draft: true
 order: 30
 cover: ../../assets/galleries/moda/01-placeholder.jpg
 i18n:
