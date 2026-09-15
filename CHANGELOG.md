@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.12.0...v1.13.0) (2026-09-15)
+
+### Features
+
+* **content:** Remove session day description ([#39](https://github.com/abelazo/abelazo.photography-web/issues/39)) ([a703d0c](https://github.com/abelazo/abelazo.photography-web/commit/a703d0c74e3de4e70ca08245b0119b1b2b45260c))
+
 ## [1.12.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.11.0...v1.12.0) (2026-09-15)
 
 ### Features
