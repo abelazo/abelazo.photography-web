@@ -1,6 +1,6 @@
 ---
 /** Site-wide footer. Attribution, location, and the contact email. */
-import { contactEmail } from '../i18n/ui';
+import ObfuscatedEmail from './ObfuscatedEmail.astro';
 import { getLangFromUrl, t } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -14,8 +14,8 @@ const year = new Date().getFullYear();
   >
     <p>{copy.footer.rights(year)}</p>
     <p>
-      {copy.footer.location} ·
-      <a class="hover:text-ink" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      {copy.footer.location} ·{' '}
+      <ObfuscatedEmail class="hover:text-ink" />
     </p>
   </div>
 </footer>

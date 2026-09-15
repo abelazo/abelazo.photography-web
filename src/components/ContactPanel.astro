@@ -1,6 +1,6 @@
 ---
 /** Contact page body. Email is the only booking channel for now. */
-import { contactEmail } from '../i18n/ui';
+import ObfuscatedEmail from './ObfuscatedEmail.astro';
 import { t } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
 
@@ -19,12 +19,7 @@ const c = t(lang).contact;
   <dl class="mt-8 border-t border-line pt-6">
     <dt class="text-xs uppercase tracking-[0.2em] text-muted">{c.emailLabel}</dt>
     <dd class="mt-2 text-xl">
-      <a
-        class="underline decoration-line underline-offset-4 hover:text-muted"
-        href={`mailto:${contactEmail}`}
-      >
-        {contactEmail}
-      </a>
+      <ObfuscatedEmail class="underline decoration-line underline-offset-4 hover:text-muted" />
     </dd>
   </dl>
 

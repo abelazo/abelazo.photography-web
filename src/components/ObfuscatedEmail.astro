@@ -1,0 +1,31 @@
+---
+/**
+ * Renders the contact email as a mailto link without the plain address ever
+ * appearing in the built HTML — it's base64-encoded here and decoded by a
+ * small client-side script on load, which keeps it off naive email-harvesting
+ * scrapers that only read static markup.
+ */
+import { contactEmail } from '../i18n/ui';
+import { encodeEmail } from '../lib/email';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const encoded = encodeEmail(contactEmail);
+---
+
+<a class={className} data-email={encoded} href="#">···</a>
+
+<script>
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-email]')) {
+    const encoded = link.dataset.email;
+    if (!encoded) continue;
+
+    const address = atob(encoded);
+    link.href = `mailto:${address}`;
+    link.textContent = address;
+    delete link.dataset.email;
+  }
+</script>

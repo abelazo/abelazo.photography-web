@@ -64,15 +64,16 @@ test.describe('sitemap and robots', () => {
   });
 
   test('sitemap gallery pages match exactly the reachable galleries', async ({ request, page }) => {
-    // What a visitor can reach: the gallery cards on the home page.
-    await page.goto('/');
-    const onSite = new Set(
-      (
-        await page
-          .locator('#galleries ul li a')
-          .evaluateAll((links) => links.map((a) => (a as HTMLAnchorElement).getAttribute('href')))
-      ).map((href) => `${SITE}${href!.replace(/\/?$/, '/')}`),
-    );
+    // What a visitor can reach: the gallery cards on the home page, in both
+    // locales — the sitemap advertises gallery-detail pages for each.
+    const onSite = new Set<string>();
+    for (const home of ['/', '/en/']) {
+      await page.goto(home);
+      const hrefs = await page
+        .locator('#galleries ul li a')
+        .evaluateAll((links) => links.map((a) => (a as HTMLAnchorElement).getAttribute('href')));
+      for (const href of hrefs) onSite.add(`${SITE}${href!.replace(/\/?$/, '/')}`);
+    }
 
     // What the sitemap advertises as a gallery-detail page.
     const index = await request.get('/sitemap-index.xml');

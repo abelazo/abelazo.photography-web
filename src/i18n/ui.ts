@@ -35,7 +35,7 @@ export const localeFlags: Record<Lang, string> = { es: '🇪🇸', en: '🇬🇧
 export const siteName = 'Abelazo Photography';
 
 /** Contact address — the only booking channel for now (mailto). */
-export const contactEmail = 'hola@abelazo.photography';
+export const contactEmail = 'contact@abelazo.photography';
 
 const es = {
   htmlLang: 'es',
