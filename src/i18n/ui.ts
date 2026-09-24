@@ -77,7 +77,7 @@ const es = {
       kicker: 'Para quién es',
       title: 'Sobre todo para quien nunca se ha puesto delante de una cámara',
       body: [
-        'No hace falta ser modelo ni sentirse fotogénico. La mayoría de las personas que vienen al estudio no han hecho una sesión en su vida y salen sorprendidas de verse bien. Estoy convencido de que todo el mundo tiene algo especial que fotografiar, y me encanta encontrarlo y sacarle el máximo partido.',
+        'No hace falta ser modelo ni sentirse fotogénico. La mayoría de las personas que vienen al estudio no han hecho una sesión en su vida y salen sorprendidas de verse bien. Estoy convencido de que todo el mundo tiene algo especial que fotografiar, y me encanta encontrarlo y sacar lo mejor de ti.',
         'Marca personal, LinkedIn, un book, fotos para un momento importante o simplemente el gusto de tener buenos retratos: si quieres fotografías profesionales, este es tu sitio.',
       ],
     },
@@ -233,7 +233,7 @@ const en = {
       kicker: "Who it's for",
       title: "Above all for people who've never been in front of a camera",
       body: [
-        "You don't need to be a model or feel photogenic. Most people who come to the studio have never done a session in their life and leave surprised at how well they look. I truly believe everyone has something special worth photographing, and I love finding it and making the most of it.",
+        "You don't need to be a model or feel photogenic. Most people who come to the studio have never done a session in their life and leave surprised at how well they look. I truly believe everyone has something special worth photographing, and I love finding it and bringing out the best in you.",
         'Personal branding, LinkedIn, a portfolio, photos for an important moment, or simply the pleasure of having good portraits: if you want professional photographs, this is the place.',
       ],
     },
