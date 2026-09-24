@@ -1,3 +1,10 @@
+## [1.14.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.13.0...v1.14.0) (2026-09-24)
+
+### Features
+
+* **content:** Update expressions ([#39](https://github.com/abelazo/abelazo.photography-web/issues/39)) ([c65b03d](https://github.com/abelazo/abelazo.photography-web/commit/c65b03dd203bd97f3abf41514d466e756f9d5f29))
+* **content:** Update texts with appealing calls ([#39](https://github.com/abelazo/abelazo.photography-web/issues/39)) ([3b615bc](https://github.com/abelazo/abelazo.photography-web/commit/3b615bc7419ab86dcada366176b65aae04bb6944))
+
 ## [1.13.0](https://github.com/abelazo/abelazo.photography-web/compare/v1.12.0...v1.13.0) (2026-09-15)
 
 ### Features
