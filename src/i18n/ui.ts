@@ -63,7 +63,7 @@ const es = {
     hero: {
       motto: 'Todo el mundo se merece tener fotografías profesionales',
       lead: 'Sobre todo para quien nunca se ha puesto delante de una cámara.',
-      note: 'Sesiones personales, profesionales, de moda y editoriales — yo te guío en todo.',
+      note: 'Soy fotógrafo especializado en personas con poca o ninguna experiencia delante de una cámara. Sesiones personales, profesionales, de moda y editoriales — yo te guío en todo.',
     },
   },
 
@@ -77,8 +77,27 @@ const es = {
       kicker: 'Para quién es',
       title: 'Sobre todo para quien nunca se ha puesto delante de una cámara',
       body: [
-        'No hace falta ser modelo ni sentirse fotogénico. La mayoría de las personas que vienen al estudio no han hecho una sesión en su vida y salen sorprendidas de verse bien.',
+        'No hace falta ser modelo ni sentirse fotogénico. La mayoría de las personas que vienen al estudio no han hecho una sesión en su vida y salen sorprendidas de verse bien. Estoy convencido de que todo el mundo tiene algo especial que fotografiar, y me encanta encontrarlo y sacarle el máximo partido.',
         'Marca personal, LinkedIn, un book, fotos para un momento importante o simplemente el gusto de tener buenos retratos: si quieres fotografías profesionales, este es tu sitio.',
+      ],
+    },
+
+    goals: {
+      kicker: 'Objetivos',
+      title: 'Cada sesión tiene tres objetivos',
+      items: [
+        {
+          title: 'Que lo pases bien',
+          body: 'Que la sesión sea un espacio seguro para ti: un rato cómodo y divertido en el que te sientas a gusto en el estudio y contigo.',
+        },
+        {
+          title: 'Que te lleves alguna foto que te guste',
+          body: 'Al menos una imagen que te encante de verdad, de las que te apetece enseñar.',
+        },
+        {
+          title: 'Que aprendamos algo nuevo',
+          body: 'Tú, sobre cómo te ves delante de la cámara; yo, sobre cómo fotografiarte. Cada sesión nos enseña algo a los dos.',
+        },
       ],
     },
 
@@ -178,7 +197,7 @@ const en = {
   htmlLang: 'en',
   tagline: 'Photographer in Tres Cantos',
   metaDescription:
-    'Photographer in Tres Cantos, near Madrid. Personal, professional, fashion and editorial sessions for people who want professional photographs — whether or not you have ever posed before.',
+    "Photographer in Tres Cantos, near Madrid. Personal, professional, fashion and editorial sessions for people who want professional photographs — whether or not you've ever posed before.",
   skipToContent: 'Skip to content',
 
   nav: {
@@ -199,8 +218,8 @@ const en = {
   home: {
     hero: {
       motto: 'Everyone deserves professional photographs',
-      lead: 'Above all for people who have never been in front of a camera.',
-      note: 'Personal, professional, fashion and editorial sessions — I guide you the whole way.',
+      lead: "Above all for people who've never been in front of a camera.",
+      note: "I'm a photographer who specialises in people with little or no experience in front of a camera. Personal, professional, fashion and editorial sessions — I guide you the whole way.",
     },
   },
 
@@ -208,14 +227,33 @@ const en = {
     title: 'The session',
     lead: 'How I work, what a session includes, and the types of session available.',
     metaDescription:
-      'What a photo session at the Tres Cantos studio is like: who it is for, what it includes and types of session.',
+      "What a photo session at the Tres Cantos studio is like: who it's for, what it includes and types of session.",
 
     forWho: {
-      kicker: 'Who it is for',
-      title: 'Above all for people who have never been in front of a camera',
+      kicker: "Who it's for",
+      title: "Above all for people who've never been in front of a camera",
       body: [
-        'You do not need to be a model or feel photogenic. Most people who come to the studio have never done a session in their life and leave surprised at how well they look.',
+        "You don't need to be a model or feel photogenic. Most people who come to the studio have never done a session in their life and leave surprised at how well they look. I truly believe everyone has something special worth photographing, and I love finding it and making the most of it.",
         'Personal branding, LinkedIn, a portfolio, photos for an important moment, or simply the pleasure of having good portraits: if you want professional photographs, this is the place.',
+      ],
+    },
+
+    goals: {
+      kicker: 'Goals',
+      title: 'Every session has three goals',
+      items: [
+        {
+          title: 'That you enjoy it',
+          body: 'That the session is a safe space for you: a comfortable, fun time where you feel at ease in the studio and with yourself.',
+        },
+        {
+          title: 'That you leave with a photo you love',
+          body: 'At least one image you genuinely like — the kind you want to show people.',
+        },
+        {
+          title: 'That we both learn something new',
+          body: 'You, about how you come across on camera; me, about how to photograph you. Every session teaches us both something.',
+        },
       ],
     },
 
@@ -229,7 +267,7 @@ const en = {
         },
         {
           title: 'Posing direction throughout the session',
-          body: 'You do not need to know how to pose. I guide you move by move so you come out natural.',
+          body: "You don't need to know how to pose. I guide you move by move so you come out natural.",
         },
         {
           title: 'Several backdrops and lighting setups',
@@ -272,7 +310,7 @@ const en = {
 
     cta: {
       title: 'Shall we talk?',
-      body: 'Tell me what kind of session you are interested in and roughly when. I will reply with availability and pricing.',
+      body: "Tell me what kind of session you're interested in and roughly when. I'll reply with availability and pricing.",
     },
   },
 
@@ -285,7 +323,7 @@ const en = {
 
   contact: {
     title: 'Contact',
-    lead: 'For now, booking is by email. Write to me with the kind of session you are interested in, roughly when, and any questions — I will reply with availability and pricing.',
+    lead: "For now, booking is by email. Write to me with the kind of session you're interested in, roughly when, and any questions — I'll reply with availability and pricing.",
     emailLabel: 'Email',
     responseNote: 'I usually reply within a day or two.',
   },
